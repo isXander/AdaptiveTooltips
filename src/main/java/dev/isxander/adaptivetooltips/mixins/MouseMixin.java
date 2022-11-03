@@ -2,6 +2,7 @@ package dev.isxander.adaptivetooltips.mixins;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import dev.isxander.adaptivetooltips.AdaptiveTooltips;
+import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -18,8 +19,8 @@ public class MouseMixin {
 
     @WrapWithCondition(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;mouseScrolled(DDD)Z"))
     private boolean trackMouseWheel(Screen screen, double mouseX, double mouseY, double amount, long window, double horizontal, double vertical) {
-        if (InputUtil.isKeyPressed(client.getWindow().getHandle(), ((KeyBindingAccessor) AdaptiveTooltips.SCROLL_BIND).getBoundKey().getCode())) {
-            if (InputUtil.isKeyPressed(client.getWindow().getHandle(), ((KeyBindingAccessor) AdaptiveTooltips.HORIZONTAL_SCROLL_BIND).getBoundKey().getCode())) {
+        if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().scrollKeyCode)) {
+            if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().horizontalScrollKeyCode)) {
                 ScrollTracker.horizontalScroll += (int) Math.signum(vertical);
             } else {
                 ScrollTracker.verticalScroll += (int) Math.signum(vertical);

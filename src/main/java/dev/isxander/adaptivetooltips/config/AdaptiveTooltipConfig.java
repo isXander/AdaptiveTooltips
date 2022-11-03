@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import dev.isxander.adaptivetooltips.AdaptiveTooltips;
+import dev.isxander.adaptivetooltips.config.gui.KeyCodeController;
 import dev.isxander.yacl.api.*;
 import dev.isxander.yacl.gui.controllers.LabelController;
 import dev.isxander.yacl.gui.controllers.TickBoxController;
@@ -11,6 +12,7 @@ import dev.isxander.yacl.gui.controllers.cycling.EnumController;
 import dev.isxander.yacl.gui.controllers.slider.IntegerSliderController;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
@@ -37,6 +39,8 @@ public class AdaptiveTooltipConfig {
     @Expose public boolean bedrockCentering = true;
     @Expose public boolean bestCorner = true;
     @Expose public boolean clampTooltip = false;
+    @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
+    @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
     @Expose public int verticalScrollSensitivity = 3;
     @Expose public int horizontalScrollSensitivity = 3;
 
@@ -121,8 +125,26 @@ public class AdaptiveTooltipConfig {
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .option(Option.createBuilder(Text.class)
-                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", AdaptiveTooltips.SCROLL_BIND.getBoundKeyLocalizedText().copy().formatted(Formatting.ITALIC), AdaptiveTooltips.HORIZONTAL_SCROLL_BIND.getBoundKeyLocalizedText().copy().formatted(Formatting.ITALIC))))
+                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions")))
                                         .controller(LabelController::new)
+                                        .build())
+                                .option(Option.createBuilder(int.class)
+                                        .name(Text.translatable("adaptivetooltips.bind.scroll"))
+                                        .binding(
+                                                DEFAULTS.scrollKeyCode,
+                                                () -> scrollKeyCode,
+                                                val -> scrollKeyCode = val
+                                        )
+                                        .controller(KeyCodeController::new)
+                                        .build())
+                                .option(Option.createBuilder(int.class)
+                                        .name(Text.translatable("adaptivetooltips.bind.horizontal_scroll"))
+                                        .binding(
+                                                DEFAULTS.horizontalScrollKeyCode,
+                                                () -> horizontalScrollKeyCode,
+                                                val -> horizontalScrollKeyCode = val
+                                        )
+                                        .controller(KeyCodeController::new)
                                         .build())
                                 .option(Option.createBuilder(int.class)
                                         .name(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.title"))

@@ -18,5 +18,6 @@
   "adaptivetooltips.wrap_text_behaviour.remaining_width": "Remaining width",
   "adaptivetooltips.format.pixels": "%s pixels",
   "adaptivetooltips.bind.scroll": "Enable Tooltip Scrolling",
-  "adaptivetooltips.bind.horizontal_scroll": "Enable Horizontal Scrolling"
+  "adaptivetooltips.bind.horizontal_scroll": "Enable Horizontal Scrolling",
+  "adaptivetooltips.gui.awaiting_key": "Press a key"
 }

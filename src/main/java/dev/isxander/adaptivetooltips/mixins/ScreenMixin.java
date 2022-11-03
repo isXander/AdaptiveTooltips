@@ -62,10 +62,10 @@ public class ScreenMixin {
         if (AdaptiveTooltipConfig.getInstance().bestCorner)
             bestCornerTooltip(mouseX, mouseY, width, height);
 
-        scrollTooltip(components);
-
         if (AdaptiveTooltipConfig.getInstance().clampTooltip)
             clampTooltip(width, height);
+
+        scrollTooltip(components);
     }
 
     private void bedrockCenter(int mouseX, int mouseY, int width, int height, int x, int y) {
