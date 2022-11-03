@@ -1,6 +1,5 @@
 package dev.isxander.adaptivetooltips.mixins;
 
-import com.google.common.collect.Maps;
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
 import dev.isxander.adaptivetooltips.helpers.TooltipWrapper;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
@@ -60,7 +59,8 @@ public class ScreenMixin {
         if (AdaptiveTooltipConfig.getInstance().bedrockCentering)
             bedrockCenter(mouseX, mouseY, width, height, debugify$modifiedX, debugify$modifiedY);
 
-        bestCornerTooltip(mouseX, mouseY, width, height);
+        if (AdaptiveTooltipConfig.getInstance().bestCorner)
+            bestCornerTooltip(mouseX, mouseY, width, height);
 
         scrollTooltip(components);
 

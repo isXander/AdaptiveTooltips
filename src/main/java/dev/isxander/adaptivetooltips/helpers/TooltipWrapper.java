@@ -19,7 +19,7 @@ public class TooltipWrapper {
             case SCREEN_WIDTH ->
                     maxWidth = screen.width - 15;
             case REMAINING_WIDTH ->
-                    maxWidth = screen.width - x;
+                    maxWidth = screen.width - x - 15;
         }
 
         int width = getMaxWidth(textRenderer, lines);
