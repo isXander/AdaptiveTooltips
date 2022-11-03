@@ -15,14 +15,26 @@
   "license": "LGPL-3.0-or-later",
   "environment": "client",
   "entrypoints": {
-
+    "client": [
+      "dev.isxander.adaptivetooltips.AdaptiveTooltips::onInitializeClient"
+    ],
+    "preLaunch": [
+      "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
+    ],
+    "modmenu": [
+      "dev.isxander.adaptivetooltips.config.modmenu.ModMenuIntegration"
+    ]
   },
   "mixins": [
-    "fabric-mod-template.mixins.json"
+    "adaptive-tooltips.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.0",
     "minecraft": "1.19.x",
-    "java": ">=17"
+    "java": ">=17",
+    "fabric": "*"
+  },
+  "breaks": {
+    "tooltipfix": "*"
   }
 }

@@ -16,6 +16,9 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
+    maven("https://maven.isxander.dev/releases")
+    maven("https://maven.terraformersmc.com/releases")
+    maven("https://jitpack.io")
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
@@ -25,8 +28,15 @@ dependencies {
     mappings("net.fabricmc:yarn:$minecraftVersion+build.${libs.versions.yarn.get()}:v2")
     modImplementation(libs.fabric.loader)
 
-//    modImplementation(libs.fabric.api)
-//    modImplementation(fabricApi.module("fabric-resource-loader-v0", libs.versions.fabric.api.get()))
+    modImplementation(libs.fabric.api)
+    modImplementation(libs.yacl)
+    modImplementation(libs.mod.menu)
+
+    libs.mixin.extras.let {
+        implementation(it)
+        annotationProcessor(it)
+        include(it)
+    }
 }
 
 tasks {

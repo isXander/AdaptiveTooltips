@@ -1,0 +1,22 @@
+{
+  "adaptivetooltips.title": "Adaptive Tooltips",
+  "adaptivetooltips.opt.text_wrapping.title": "Text Wrapping",
+  "adaptivetooltips.opt.text_wrapping.desc": "How Adaptive Tooltips wraps tooltip text.",
+  "adaptivetooltips.opt.bedrock_centering.title": "Bedrock Centering",
+  "adaptivetooltips.opt.bedrock_centering.desc": "When the tooltip is too long to be rendered on the screen, the tooltip is positioned in the center of the mouse, instead of the left or the right.",
+  "adaptivetooltips.opt.align_to_corner.title": "Align To Corner",
+  "adaptivetooltips.opt.align_to_corner.desc": "When all else fails (including bedrock centering) Adaptive Tooltips determines the least obstructive corner to align the tooltip too. Best to be used with screen width text wrapping.",
+  "adaptivetooltips.opt.clamp_tooltip_pos.title": "Clamp Tooltip Position",
+  "adaptivetooltips.opt.clamp_tooltip_pos.desc": "Prevent tooltip from going off-screen by not allowing the position to clip off the screen.",
+  "adaptivetooltips.label.scrolling_instructions": "Hold %s and scroll while a tooltip is displaying to scroll up and down on it, hold %s at the same time to scroll horizontally instead.",
+  "adaptivetooltips.opt.vertical_scroll_sensitivity.title": "Vertical Scroll Sensitivity",
+  "adaptivetooltips.opt.vertical_scroll_sensitivity.desc": "Amount of pixels to move the tooltip vertically per scroll step.",
+  "adaptivetooltips.opt.horizontal_scroll_sensitivity.title": "Horizontal Scroll Sensitivity",
+  "adaptivetooltips.opt.horizontal_scroll_sensitivity.desc": "Amount of pixels to move the tooltip horizontal per scroll step.",
+  "adaptivetooltips.wrap_text_behaviour.off": "Off",
+  "adaptivetooltips.wrap_text_behaviour.screen_width": "Screen width",
+  "adaptivetooltips.wrap_text_behaviour.remaining_width": "Remaining width",
+  "adaptivetooltips.format.pixels": "%s pixels",
+  "adaptivetooltips.bind.scroll": "Enable Tooltip Scrolling",
+  "adaptivetooltips.bind.horizontal_scroll": "Enable Horizontal Scrolling"
+}

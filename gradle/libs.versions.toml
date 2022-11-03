@@ -11,12 +11,18 @@ minecraft = "1.19.2"
 yarn = "28"
 fabric_loader = "0.14.10"
 fabric_api = "0.62.0+1.19.2"
+yacl = "1.6.0"
+mod_menu = "4.0.6"
+mixin_extras = "0.1.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
+yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
+mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod_menu" }
+mixin_extras = { module = "com.github.llamalad7:mixinextras", version.ref = "mixin_extras" }
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
