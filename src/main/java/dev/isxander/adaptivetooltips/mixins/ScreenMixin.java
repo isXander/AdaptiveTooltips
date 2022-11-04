@@ -1,8 +1,10 @@
 package dev.isxander.adaptivetooltips.mixins;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
 import dev.isxander.adaptivetooltips.helpers.TooltipWrapper;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -12,14 +14,18 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -30,11 +36,9 @@ public class ScreenMixin {
 
     @Shadow protected TextRenderer textRenderer;
 
-    @Unique
-    private int debugify$modifiedX;
-
-    @Unique
-    private int debugify$modifiedY;
+    @Unique private int debugify$modifiedX;
+    @Unique private int debugify$modifiedY;
+    @Unique private boolean debugify$preventVanillaRePos = false;
 
     @Redirect(method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"))
     private void wrapText(Screen instance, MatrixStack matrices, List<? extends OrderedText> lines, int x, int y, MatrixStack dontuse, Text text) {
@@ -55,6 +59,10 @@ public class ScreenMixin {
     private void moveTooltip(MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY, CallbackInfo ci, int width, int height, int x, int y) {
         debugify$modifiedX = x;
         debugify$modifiedY = y;
+        debugify$preventVanillaRePos = false;
+
+        if (AdaptiveTooltipConfig.getInstance().prioritizeTooltipTop)
+            prioritizeTooltipTop(height);
 
         if (AdaptiveTooltipConfig.getInstance().bedrockCentering)
             bedrockCenter(mouseX, mouseY, width, height, debugify$modifiedX, debugify$modifiedY);
@@ -65,7 +73,7 @@ public class ScreenMixin {
         if (AdaptiveTooltipConfig.getInstance().clampTooltip)
             clampTooltip(width, height);
 
-        scrollTooltip(components);
+        scrollTooltip(matrices, components);
     }
 
     private void bedrockCenter(int mouseX, int mouseY, int width, int height, int x, int y) {
@@ -90,18 +98,30 @@ public class ScreenMixin {
     }
 
     private void bestCornerTooltip(int mouseX, int mouseY, int width, int height) {
-        if (debugify$modifiedX < 5 || debugify$modifiedX + width > this.width - 5 || debugify$modifiedY < 5 || debugify$modifiedY + height > this.height - 5) {
+        if ((debugify$modifiedX < 4 || debugify$modifiedY < 4) || AdaptiveTooltipConfig.getInstance().alwaysBestCorner) {
+            debugify$preventVanillaRePos = true;
+
             // find the least overlapping (over the mouse) corner to render the tooltip in
             TreeMap<Integer, Pair<Integer, Integer>> corners = new TreeMap<>(); // obstruction amt - x, y
-            corners.put(Math.max((mouseX - (this.width - 5 - width)) * (5 + height - mouseY), -10), new Pair<>(this.width - 5 - width, 5)); // top right
-            corners.put(Math.max((5 + width - mouseX) * (mouseY - (this.height - 5 - height)), -10), new Pair<>(5, this.height - 5 - height)); // bottom left
-            corners.put(Math.max((mouseX - (this.width - 5 - width)) * (mouseY - (this.height - 5 - height)), -10), new Pair<>(this.width - 5 - width, this.height - 5 - height)); // bottom right
-            corners.put(Math.max((5 + width - mouseX) * (5 + height - mouseY), -10), new Pair<>(5, 5)); // top left
+            corners.put((int) Math.max(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(5 + height - mouseY, 0), -10), new Pair<>(this.width - 5 - width, 5)); // top right
+            corners.put((int) Math.max(Math.max((5 + width - mouseX), 0) * Math.max(mouseY - (this.height - 5 - height), 0), -10), new Pair<>(5, this.height - 5 - height)); // bottom left
+            corners.put((int) Math.max(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(mouseY - (this.height - 5 - height), 0), -10), new Pair<>(this.width - 5 - width, this.height - 5 - height)); // bottom right
+            corners.put((int) Math.max(Math.max(5 + width - mouseX, 0) * Math.max(5 + height - mouseY, 0), -10), new Pair<>(5, 5)); // top left
             // top left must be put last to rely on that maps override identical keys so if each overlapping is less than -10 it uses top left
+
+            corners.forEach((k, v) -> {
+                System.out.println(k + " - " + v.getLeft() + ", " + v.getRight());
+            });
 
             Pair<Integer, Integer> bestCorner = corners.firstEntry().getValue();
             debugify$modifiedX = bestCorner.getLeft();
             debugify$modifiedY = bestCorner.getRight();
+        }
+    }
+
+    private void prioritizeTooltipTop(int height) {
+        if (height > this.height) {
+            debugify$modifiedY += height - this.height + 1;
         }
     }
 
@@ -110,23 +130,46 @@ public class ScreenMixin {
         debugify$modifiedY = MathHelper.clamp(debugify$modifiedY, 5, this.height - height - 5);
     }
 
-    private void scrollTooltip(List<TooltipComponent> components) {
+    private void scrollTooltip(MatrixStack matrices, List<TooltipComponent> components) {
         ScrollTracker.resetIfNeeded(components);
+        ScrollTracker.tickAnimation(MinecraftClient.getInstance().getLastFrameDuration());
 
-        debugify$modifiedX += ScrollTracker.horizontalScroll * AdaptiveTooltipConfig.getInstance().horizontalScrollSensitivity;
-        debugify$modifiedY += ScrollTracker.verticalScroll * AdaptiveTooltipConfig.getInstance().verticalScrollSensitivity;
+        matrices.translate(ScrollTracker.currentHorizontalScroll, ScrollTracker.currentVerticalScroll, 0);
     }
 
     /**
      * cursed modifyvariable because you can't modify localcaptures
      */
-    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0), ordinal = 4)
+    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), ordinal = 4)
     private int modifyX(int x) {
         return debugify$modifiedX;
     }
 
-    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0), ordinal = 5)
+    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), ordinal = 5)
     private int modifyY(int y) {
         return debugify$modifiedY;
+    }
+
+    @ModifyExpressionValue(method = "renderTooltipFromComponents", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/Screen;width:I", opcode = Opcodes.GETFIELD, ordinal = 0))
+    private int shouldDoXRePos(int width) {
+        if (debugify$preventVanillaRePos)
+            return Integer.MAX_VALUE;
+        return width;
+    }
+
+    @ModifyExpressionValue(method = "renderTooltipFromComponents", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/Screen;height:I", opcode = Opcodes.GETFIELD, ordinal = 0))
+    private int shouldDoYRePos(int height) {
+        if (debugify$preventVanillaRePos)
+            return Integer.MAX_VALUE;
+        return height;
+    }
+
+    @ModifyArgs(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;fillGradient(Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V"))
+    private void changeTooltipColorAlpha(Args args) {
+        Color colorStart = new Color(args.<Integer>get(7), true);
+        args.set(7, new Color(colorStart.getRed(), colorStart.getGreen(), colorStart.getBlue(), (int) MathHelper.clamp(colorStart.getAlpha() * AdaptiveTooltipConfig.getInstance().tooltipTransparency, 0, 255)).getRGB());
+
+        Color colorEnd = new Color(args.<Integer>get(8), true);
+        args.set(8, new Color(colorEnd.getRed(), colorEnd.getGreen(), colorEnd.getBlue(), (int) MathHelper.clamp(colorEnd.getAlpha() * AdaptiveTooltipConfig.getInstance().tooltipTransparency, 0, 255)).getRGB());
     }
 }

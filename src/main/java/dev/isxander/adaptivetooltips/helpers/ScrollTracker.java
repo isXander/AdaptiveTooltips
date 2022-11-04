@@ -1,5 +1,6 @@
 package dev.isxander.adaptivetooltips.helpers;
 
+import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.mixins.BundleTooltipComponentAccessor;
 import dev.isxander.adaptivetooltips.mixins.OrderedTextTooltipComponentAccessor;
 import net.minecraft.client.gui.tooltip.BundleTooltipComponent;
@@ -9,19 +10,33 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class ScrollTracker {
-    public static int verticalScroll = 0;
-    public static int horizontalScroll = 0;
+    public static int targetVerticalScroll = 0;
+    public static int targetHorizontalScroll = 0;
+
+    public static float currentVerticalScroll = 0f;
+    public static float currentHorizontalScroll = 0f;
 
     private static List<TooltipComponent> trackedComponents = null;
 
+    public static void tickAnimation(float tickDelta) {
+        if (AdaptiveTooltipConfig.getInstance().smoothScrolling) {
+            currentVerticalScroll = MathHelper.lerp(tickDelta * 0.5f, currentVerticalScroll, targetVerticalScroll);
+            currentHorizontalScroll = MathHelper.lerp(tickDelta * 0.5f, currentHorizontalScroll, targetHorizontalScroll);
+        } else {
+            currentVerticalScroll = targetVerticalScroll;
+            currentHorizontalScroll = targetHorizontalScroll;
+        }
+    }
+
     public static void reset() {
-        verticalScroll = 0;
-        horizontalScroll = 0;
+        targetVerticalScroll = targetHorizontalScroll = 0;
+        currentVerticalScroll = currentHorizontalScroll = 0;
     }
 
     public static void resetIfNeeded(List<TooltipComponent> components) {

@@ -9,12 +9,12 @@ import dev.isxander.yacl.api.*;
 import dev.isxander.yacl.gui.controllers.LabelController;
 import dev.isxander.yacl.gui.controllers.TickBoxController;
 import dev.isxander.yacl.gui.controllers.cycling.EnumController;
+import dev.isxander.yacl.gui.controllers.slider.FloatSliderController;
 import dev.isxander.yacl.gui.controllers.slider.IntegerSliderController;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +36,17 @@ public class AdaptiveTooltipConfig {
     public static final AdaptiveTooltipConfig DEFAULTS = new AdaptiveTooltipConfig();
 
     @Expose public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
+    @Expose public boolean prioritizeTooltipTop = true;
     @Expose public boolean bedrockCentering = true;
     @Expose public boolean bestCorner = true;
+    @Expose public boolean alwaysBestCorner = false;
     @Expose public boolean clampTooltip = false;
     @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
-    @Expose public int verticalScrollSensitivity = 3;
-    @Expose public int horizontalScrollSensitivity = 3;
+    @Expose public int verticalScrollSensitivity = 10;
+    @Expose public int horizontalScrollSensitivity = 10;
+    @Expose public boolean smoothScrolling = true;
+    @Expose public float tooltipTransparency = 1f;
 
     public void save() {
         try {
@@ -93,6 +97,16 @@ public class AdaptiveTooltipConfig {
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .option(Option.createBuilder(boolean.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.desc"))
+                                        .binding(
+                                                DEFAULTS.prioritizeTooltipTop,
+                                                () -> prioritizeTooltipTop,
+                                                val -> prioritizeTooltipTop = val
+                                        )
+                                        .controller(TickBoxController::new)
+                                        .build())
+                                .option(Option.createBuilder(boolean.class)
                                         .name(Text.translatable("adaptivetooltips.opt.bedrock_centering.title"))
                                         .tooltip(Text.translatable("adaptivetooltips.opt.bedrock_centering.desc"))
                                         .binding(
@@ -113,6 +127,16 @@ public class AdaptiveTooltipConfig {
                                         .controller(TickBoxController::new)
                                         .build())
                                 .option(Option.createBuilder(boolean.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.always_align_corner.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.always_align_corner.desc"))
+                                        .binding(
+                                                DEFAULTS.alwaysBestCorner,
+                                                () -> alwaysBestCorner,
+                                                val -> alwaysBestCorner = val
+                                        )
+                                        .controller(TickBoxController::new)
+                                        .build())
+                                .option(Option.createBuilder(boolean.class)
                                         .name(Text.translatable("adaptivetooltips.opt.clamp_tooltip_pos.title"))
                                         .tooltip(Text.translatable("adaptivetooltips.opt.clamp_tooltip_pos.desc"))
                                         .binding(
@@ -125,7 +149,7 @@ public class AdaptiveTooltipConfig {
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .option(Option.createBuilder(Text.class)
-                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions")))
+                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(scrollKeyCode))))
                                         .controller(LabelController::new)
                                         .build())
                                 .option(Option.createBuilder(int.class)
@@ -154,7 +178,7 @@ public class AdaptiveTooltipConfig {
                                                 () -> verticalScrollSensitivity,
                                                 val -> verticalScrollSensitivity = val
                                         )
-                                        .controller(opt -> new IntegerSliderController(opt, 1, 10, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
+                                        .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
                                         .build())
                                 .option(Option.createBuilder(int.class)
                                         .name(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.title"))
@@ -164,7 +188,29 @@ public class AdaptiveTooltipConfig {
                                                 () -> horizontalScrollSensitivity,
                                                 val -> horizontalScrollSensitivity = val
                                         )
-                                        .controller(opt -> new IntegerSliderController(opt, 1, 10, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
+                                        .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
+                                        .build())
+                                .option(Option.createBuilder(boolean.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
+                                        .binding(
+                                                DEFAULTS.smoothScrolling,
+                                                () -> smoothScrolling,
+                                                val -> smoothScrolling = val
+                                        )
+                                        .controller(TickBoxController::new)
+                                        .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .option(Option.createBuilder(float.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.tooltip_transparency.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.tooltip_transparency.desc"))
+                                        .binding(
+                                                DEFAULTS.tooltipTransparency,
+                                                () -> tooltipTransparency,
+                                                val -> tooltipTransparency = val
+                                        )
+                                        .controller(opt -> new FloatSliderController(opt, 0f, 1.5f, 0.05f, val -> val == 1f ? Text.translatable("adaptivetooltips.format.vanilla") : Text.of(String.format("%+,.0f%%", (val - 1) * 100))))
                                         .build())
                                 .build())
                         .build())

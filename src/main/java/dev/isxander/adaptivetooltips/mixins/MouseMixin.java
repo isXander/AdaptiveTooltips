@@ -1,7 +1,6 @@
 package dev.isxander.adaptivetooltips.mixins;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import dev.isxander.adaptivetooltips.AdaptiveTooltips;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
 import net.minecraft.client.MinecraftClient;
@@ -21,9 +20,9 @@ public class MouseMixin {
     private boolean trackMouseWheel(Screen screen, double mouseX, double mouseY, double amount, long window, double horizontal, double vertical) {
         if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().scrollKeyCode)) {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().horizontalScrollKeyCode)) {
-                ScrollTracker.horizontalScroll += (int) Math.signum(vertical);
+                ScrollTracker.targetHorizontalScroll += (int) Math.signum(vertical) * AdaptiveTooltipConfig.getInstance().horizontalScrollKeyCode;
             } else {
-                ScrollTracker.verticalScroll += (int) Math.signum(vertical);
+                ScrollTracker.targetVerticalScroll += (int) Math.signum(vertical) * AdaptiveTooltipConfig.getInstance().verticalScrollSensitivity;
             }
             return false;
         }
