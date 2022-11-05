@@ -134,7 +134,7 @@ public class ScreenMixin {
         ScrollTracker.resetIfNeeded(components);
         ScrollTracker.tickAnimation(MinecraftClient.getInstance().getLastFrameDuration());
 
-        matrices.translate(ScrollTracker.currentHorizontalScroll, ScrollTracker.currentVerticalScroll, 0);
+        matrices.translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
     }
 
     /**

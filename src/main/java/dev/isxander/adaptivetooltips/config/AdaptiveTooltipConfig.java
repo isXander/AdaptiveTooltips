@@ -15,6 +15,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +44,10 @@ public class AdaptiveTooltipConfig {
     @Expose public boolean clampTooltip = false;
     @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
+    @Expose public boolean smoothScrolling = true;
+    @Expose public ScrollDirection scrollDirection = Util.getOperatingSystem() == Util.OperatingSystem.OSX ? ScrollDirection.NATURAL : ScrollDirection.REVERSE;
     @Expose public int verticalScrollSensitivity = 10;
     @Expose public int horizontalScrollSensitivity = 10;
-    @Expose public boolean smoothScrolling = true;
     @Expose public float tooltipTransparency = 1f;
 
     public void save() {
@@ -84,6 +86,8 @@ public class AdaptiveTooltipConfig {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("adaptivetooltips.title"))
                         .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("adaptivetooltips.group.content_manipulation.title"))
+                                .tooltip(Text.translatable("adaptivetooltips.group.content_manipulation.desc"))
                                 .option(Option.createBuilder(WrapTextBehaviour.class)
                                         .name(Text.translatable("adaptivetooltips.opt.text_wrapping.title"))
                                         .tooltip(Text.translatable("adaptivetooltips.opt.text_wrapping.desc"))
@@ -96,6 +100,8 @@ public class AdaptiveTooltipConfig {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("adaptivetooltips.group.positioning.title"))
+                                .tooltip(Text.translatable("adaptivetooltips.group.positioning.desc"))
                                 .option(Option.createBuilder(boolean.class)
                                         .name(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.title"))
                                         .tooltip(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.desc"))
@@ -148,8 +154,10 @@ public class AdaptiveTooltipConfig {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("adaptivetooltips.group.scrolling.title"))
+                                .tooltip(Text.translatable("adaptivetooltips.group.scrolling.desc"))
                                 .option(Option.createBuilder(Text.class)
-                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(scrollKeyCode))))
+                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(scrollKeyCode), KeyCodeController.DEFAULT_FORMATTER.apply(horizontalScrollKeyCode))))
                                         .controller(LabelController::new)
                                         .build())
                                 .option(Option.createBuilder(int.class)
@@ -169,6 +177,26 @@ public class AdaptiveTooltipConfig {
                                                 val -> horizontalScrollKeyCode = val
                                         )
                                         .controller(KeyCodeController::new)
+                                        .build())
+                                .option(Option.createBuilder(boolean.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
+                                        .binding(
+                                                DEFAULTS.smoothScrolling,
+                                                () -> smoothScrolling,
+                                                val -> smoothScrolling = val
+                                        )
+                                        .controller(TickBoxController::new)
+                                        .build())
+                                .option(Option.createBuilder(ScrollDirection.class)
+                                        .name(Text.translatable("adaptivetooltips.opt.scroll_direction.title"))
+                                        .tooltip(Text.translatable("adaptivetooltips.opt.scroll_direction.desc"))
+                                        .binding(
+                                                DEFAULTS.scrollDirection,
+                                                () -> scrollDirection,
+                                                val -> scrollDirection = val
+                                        )
+                                        .controller(EnumController::new)
                                         .build())
                                 .option(Option.createBuilder(int.class)
                                         .name(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.title"))
@@ -190,18 +218,10 @@ public class AdaptiveTooltipConfig {
                                         )
                                         .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
                                         .build())
-                                .option(Option.createBuilder(boolean.class)
-                                        .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
-                                        .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
-                                        .binding(
-                                                DEFAULTS.smoothScrolling,
-                                                () -> smoothScrolling,
-                                                val -> smoothScrolling = val
-                                        )
-                                        .controller(TickBoxController::new)
-                                        .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("adaptivetooltips.group.style.title"))
+                                .tooltip(Text.translatable("adaptivetooltips.group.style.desc"))
                                 .option(Option.createBuilder(float.class)
                                         .name(Text.translatable("adaptivetooltips.opt.tooltip_transparency.title"))
                                         .tooltip(Text.translatable("adaptivetooltips.opt.tooltip_transparency.desc"))

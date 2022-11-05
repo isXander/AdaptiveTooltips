@@ -20,9 +20,10 @@ public class MouseMixin {
     private boolean trackMouseWheel(Screen screen, double mouseX, double mouseY, double amount, long window, double horizontal, double vertical) {
         if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().scrollKeyCode)) {
             if (InputUtil.isKeyPressed(client.getWindow().getHandle(), AdaptiveTooltipConfig.getInstance().horizontalScrollKeyCode)) {
-                ScrollTracker.targetHorizontalScroll += (int) Math.signum(vertical) * AdaptiveTooltipConfig.getInstance().horizontalScrollKeyCode;
+                ScrollTracker.addHorizontalScroll((int) Math.signum(vertical));
             } else {
-                ScrollTracker.targetVerticalScroll += (int) Math.signum(vertical) * AdaptiveTooltipConfig.getInstance().verticalScrollSensitivity;
+                ScrollTracker.addVerticalScroll((int) Math.signum(vertical));
+                ScrollTracker.addHorizontalScroll((int) Math.signum(horizontal));
             }
             return false;
         }

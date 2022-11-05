@@ -22,6 +22,9 @@ public class TooltipWrapper {
                     maxWidth = screen.width - x - 15;
         }
 
+        if (lines.stream().allMatch(text -> text.getString().isBlank()))
+            return List.of();
+        
         int width = getMaxWidth(textRenderer, lines);
         if (width <= maxWidth)
             return lines.stream().map(Text::asOrderedText).collect(Collectors.toList());

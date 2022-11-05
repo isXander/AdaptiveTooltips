@@ -1,6 +1,7 @@
 package dev.isxander.adaptivetooltips.helpers;
 
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
+import dev.isxander.adaptivetooltips.config.ScrollDirection;
 import dev.isxander.adaptivetooltips.mixins.BundleTooltipComponentAccessor;
 import dev.isxander.adaptivetooltips.mixins.OrderedTextTooltipComponentAccessor;
 import net.minecraft.client.gui.tooltip.BundleTooltipComponent;
@@ -16,13 +17,33 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ScrollTracker {
-    public static int targetVerticalScroll = 0;
-    public static int targetHorizontalScroll = 0;
+    private static int targetVerticalScroll = 0;
+    private static int targetHorizontalScroll = 0;
 
-    public static float currentVerticalScroll = 0f;
-    public static float currentHorizontalScroll = 0f;
+    private static float currentVerticalScroll = 0f;
+    private static float currentHorizontalScroll = 0f;
 
     private static List<TooltipComponent> trackedComponents = null;
+
+    public static void addVerticalScroll(int amt) {
+        if (AdaptiveTooltipConfig.getInstance().scrollDirection == ScrollDirection.NATURAL)
+            amt = -amt;
+        targetVerticalScroll += amt * AdaptiveTooltipConfig.getInstance().verticalScrollSensitivity;
+    }
+
+    public static void addHorizontalScroll(int amt) {
+        if (AdaptiveTooltipConfig.getInstance().scrollDirection == ScrollDirection.NATURAL)
+            amt = -amt;
+        targetHorizontalScroll += amt * AdaptiveTooltipConfig.getInstance().horizontalScrollSensitivity;
+    }
+
+    public static float getVerticalScroll() {
+        return currentVerticalScroll;
+    }
+
+    public static float getHorizontalScroll() {
+        return currentHorizontalScroll;
+    }
 
     public static void tickAnimation(float tickDelta) {
         if (AdaptiveTooltipConfig.getInstance().smoothScrolling) {
