@@ -57,7 +57,7 @@ public class ScrollTracker {
             targetHorizontalScroll = 0;
 
         targetVerticalScroll = MathHelper.clamp(targetVerticalScroll, Math.min(screenHeight - (y + height) - 4, 0), Math.max(-y, 0));
-        targetHorizontalScroll = MathHelper.clamp(targetHorizontalScroll, Math.min(screenWidth - (x + width) - 4, 0), Math.max(-x, 0));
+        targetHorizontalScroll = MathHelper.clamp(targetHorizontalScroll, Math.min(screenWidth - (x + width) - 4, 0), Math.max(-x + 4, 0));
 
         tickAnimation(tickDelta);
     }

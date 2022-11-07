@@ -12,20 +12,24 @@ import java.util.stream.Collectors;
 
 public class TooltipWrapper {
     public static List<OrderedText> wrapTooltipLines(Screen screen, TextRenderer textRenderer, List<Text> lines, int x) {
+        if (lines.stream().allMatch(text -> text.getString().isBlank()))
+            return List.of();
+        int width = getMaxWidth(textRenderer, lines);
+
         int maxWidth = 0;
         switch (AdaptiveTooltipConfig.getInstance().wrapText) {
             case OFF ->
                     maxWidth = Integer.MAX_VALUE;
             case SCREEN_WIDTH ->
                     maxWidth = screen.width - 15;
-            case REMAINING_WIDTH ->
-                    maxWidth = screen.width - x - 15;
+            case REMAINING_WIDTH -> {
+                maxWidth = screen.width - x - 15;
+
+                if (x + 12 + width > screen.width)
+                    maxWidth = Math.max(maxWidth, x - 20);
+            }
         }
 
-        if (lines.stream().allMatch(text -> text.getString().isBlank()))
-            return List.of();
-        
-        int width = getMaxWidth(textRenderer, lines);
         if (width <= maxWidth)
             return lines.stream().map(Text::asOrderedText).collect(Collectors.toList());
 
