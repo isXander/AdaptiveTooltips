@@ -39,7 +39,7 @@ public class AdaptiveTooltipConfig {
     @Expose public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
     @Expose public boolean prioritizeTooltipTop = true;
     @Expose public boolean bedrockCentering = true;
-    @Expose public boolean bestCorner = true;
+    @Expose public boolean bestCorner = false;
     @Expose public boolean alwaysBestCorner = false;
     @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
