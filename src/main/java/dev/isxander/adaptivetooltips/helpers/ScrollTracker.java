@@ -62,7 +62,7 @@ public class ScrollTracker {
         tickAnimation(tickDelta);
     }
 
-    public static void tickAnimation(float tickDelta) {
+    private static void tickAnimation(float tickDelta) {
         if (AdaptiveTooltipConfig.getInstance().smoothScrolling) {
             currentVerticalScroll = MathHelper.lerp(tickDelta * 0.5f, currentVerticalScroll, targetVerticalScroll);
             currentHorizontalScroll = MathHelper.lerp(tickDelta * 0.5f, currentHorizontalScroll, targetHorizontalScroll);
@@ -72,7 +72,7 @@ public class ScrollTracker {
         }
     }
 
-    public static void resetIfNeeded(List<TooltipComponent> components) {
+    private static void resetIfNeeded(List<TooltipComponent> components) {
         if (!isEqual(components, trackedComponents)) {
             reset();
         }
