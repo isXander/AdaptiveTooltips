@@ -41,7 +41,6 @@ public class AdaptiveTooltipConfig {
     @Expose public boolean bedrockCentering = true;
     @Expose public boolean bestCorner = true;
     @Expose public boolean alwaysBestCorner = false;
-    @Expose public boolean clampTooltip = false;
     @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
     @Expose public boolean smoothScrolling = true;
@@ -139,16 +138,6 @@ public class AdaptiveTooltipConfig {
                                                 DEFAULTS.alwaysBestCorner,
                                                 () -> alwaysBestCorner,
                                                 val -> alwaysBestCorner = val
-                                        )
-                                        .controller(TickBoxController::new)
-                                        .build())
-                                .option(Option.createBuilder(boolean.class)
-                                        .name(Text.translatable("adaptivetooltips.opt.clamp_tooltip_pos.title"))
-                                        .tooltip(Text.translatable("adaptivetooltips.opt.clamp_tooltip_pos.desc"))
-                                        .binding(
-                                                DEFAULTS.clampTooltip,
-                                                () -> clampTooltip,
-                                                val -> clampTooltip = val
                                         )
                                         .controller(TickBoxController::new)
                                         .build())

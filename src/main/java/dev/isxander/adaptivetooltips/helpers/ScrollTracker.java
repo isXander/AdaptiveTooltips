@@ -24,6 +24,7 @@ public class ScrollTracker {
     private static float currentHorizontalScroll = 0f;
 
     private static List<TooltipComponent> trackedComponents = null;
+    public static boolean renderedThisFrame = false;
 
     public static void addVerticalScroll(int amt) {
         if (AdaptiveTooltipConfig.getInstance().scrollDirection == ScrollDirection.NATURAL)
@@ -45,6 +46,22 @@ public class ScrollTracker {
         return currentHorizontalScroll;
     }
 
+    public static void tick(List<TooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight, float tickDelta) {
+        renderedThisFrame = true;
+
+        resetIfNeeded(components);
+
+        if (height < screenHeight)
+            targetVerticalScroll = 0;
+        if (width < screenWidth)
+            targetHorizontalScroll = 0;
+
+        targetVerticalScroll = MathHelper.clamp(targetVerticalScroll, Math.min(screenHeight - (y + height) - 4, 0), Math.max(-y, 0));
+        targetHorizontalScroll = MathHelper.clamp(targetHorizontalScroll, Math.min(screenWidth - (x + width) - 4, 0), Math.max(-x, 0));
+
+        tickAnimation(tickDelta);
+    }
+
     public static void tickAnimation(float tickDelta) {
         if (AdaptiveTooltipConfig.getInstance().smoothScrolling) {
             currentVerticalScroll = MathHelper.lerp(tickDelta * 0.5f, currentVerticalScroll, targetVerticalScroll);
@@ -55,17 +72,17 @@ public class ScrollTracker {
         }
     }
 
-    public static void reset() {
-        targetVerticalScroll = targetHorizontalScroll = 0;
-        currentVerticalScroll = currentHorizontalScroll = 0;
-    }
-
     public static void resetIfNeeded(List<TooltipComponent> components) {
         if (!isEqual(components, trackedComponents)) {
             reset();
         }
 
         trackedComponents = components;
+    }
+
+    public static void reset() {
+        targetVerticalScroll = targetHorizontalScroll = 0;
+        currentVerticalScroll = currentHorizontalScroll = 0;
     }
 
     private static boolean isEqual(List<TooltipComponent> l1, List<TooltipComponent> l2) {

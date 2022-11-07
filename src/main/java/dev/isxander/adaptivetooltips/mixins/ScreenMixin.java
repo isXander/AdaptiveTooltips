@@ -14,7 +14,6 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,7 +37,6 @@ public class ScreenMixin {
 
     @Unique private int debugify$modifiedX;
     @Unique private int debugify$modifiedY;
-    @Unique private boolean debugify$preventVanillaRePos = false;
 
     @Redirect(method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"))
     private void wrapText(Screen instance, MatrixStack matrices, List<? extends OrderedText> lines, int x, int y, MatrixStack dontuse, Text text) {
@@ -59,7 +57,6 @@ public class ScreenMixin {
     private void moveTooltip(MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY, CallbackInfo ci, int width, int height, int x, int y) {
         debugify$modifiedX = x;
         debugify$modifiedY = y;
-        debugify$preventVanillaRePos = false;
 
         if (AdaptiveTooltipConfig.getInstance().prioritizeTooltipTop)
             prioritizeTooltipTop(height);
@@ -70,10 +67,7 @@ public class ScreenMixin {
         if (AdaptiveTooltipConfig.getInstance().bestCorner)
             bestCornerTooltip(mouseX, mouseY, width, height);
 
-        if (AdaptiveTooltipConfig.getInstance().clampTooltip)
-            clampTooltip(width, height);
-
-        scrollTooltip(matrices, components);
+        scrollTooltip(matrices, components, width, height);
     }
 
     private void bedrockCenter(int mouseX, int mouseY, int width, int height, int x, int y) {
@@ -99,19 +93,13 @@ public class ScreenMixin {
 
     private void bestCornerTooltip(int mouseX, int mouseY, int width, int height) {
         if ((debugify$modifiedX < 4 || debugify$modifiedY < 4) || AdaptiveTooltipConfig.getInstance().alwaysBestCorner) {
-            debugify$preventVanillaRePos = true;
-
             // find the least overlapping (over the mouse) corner to render the tooltip in
             TreeMap<Integer, Pair<Integer, Integer>> corners = new TreeMap<>(); // obstruction amt - x, y
-            corners.put((int) Math.max(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(5 + height - mouseY, 0), -10), new Pair<>(this.width - 5 - width, 5)); // top right
-            corners.put((int) Math.max(Math.max((5 + width - mouseX), 0) * Math.max(mouseY - (this.height - 5 - height), 0), -10), new Pair<>(5, this.height - 5 - height)); // bottom left
-            corners.put((int) Math.max(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(mouseY - (this.height - 5 - height), 0), -10), new Pair<>(this.width - 5 - width, this.height - 5 - height)); // bottom right
-            corners.put((int) Math.max(Math.max(5 + width - mouseX, 0) * Math.max(5 + height - mouseY, 0), -10), new Pair<>(5, 5)); // top left
+            corners.put(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(5 + height - mouseY, 0), new Pair<>(this.width - 5 - width, 5)); // top right
+            corners.put(Math.max((5 + width - mouseX), 0) * Math.max(mouseY - (this.height - 5 - height), 0), new Pair<>(5, this.height - 5 - height)); // bottom left
+            corners.put(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(mouseY - (this.height - 5 - height), 0), new Pair<>(this.width - 5 - width, this.height - 5 - height)); // bottom right
+            corners.put(Math.max(5 + width - mouseX, 0) * Math.max(5 + height - mouseY, 0), new Pair<>(5, 5)); // top left
             // top left must be put last to rely on that maps override identical keys so if each overlapping is less than -10 it uses top left
-
-            corners.forEach((k, v) -> {
-                System.out.println(k + " - " + v.getLeft() + ", " + v.getRight());
-            });
 
             Pair<Integer, Integer> bestCorner = corners.firstEntry().getValue();
             debugify$modifiedX = bestCorner.getLeft();
@@ -121,18 +109,12 @@ public class ScreenMixin {
 
     private void prioritizeTooltipTop(int height) {
         if (height > this.height) {
-            debugify$modifiedY += height - this.height + 1;
+            debugify$modifiedY = 4;
         }
     }
 
-    private void clampTooltip(int width, int height) {
-        debugify$modifiedX = MathHelper.clamp(debugify$modifiedX, 5, this.width - width - 5);
-        debugify$modifiedY = MathHelper.clamp(debugify$modifiedY, 5, this.height - height - 5);
-    }
-
-    private void scrollTooltip(MatrixStack matrices, List<TooltipComponent> components) {
-        ScrollTracker.resetIfNeeded(components);
-        ScrollTracker.tickAnimation(MinecraftClient.getInstance().getLastFrameDuration());
+    private void scrollTooltip(MatrixStack matrices, List<TooltipComponent> components, int width, int height) {
+        ScrollTracker.tick(components, debugify$modifiedX, debugify$modifiedY, width, height, this.width, this.height, MinecraftClient.getInstance().getLastFrameDuration());
 
         matrices.translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
     }
@@ -148,20 +130,6 @@ public class ScreenMixin {
     @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), ordinal = 5)
     private int modifyY(int y) {
         return debugify$modifiedY;
-    }
-
-    @ModifyExpressionValue(method = "renderTooltipFromComponents", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/Screen;width:I", opcode = Opcodes.GETFIELD, ordinal = 0))
-    private int shouldDoXRePos(int width) {
-        if (debugify$preventVanillaRePos)
-            return Integer.MAX_VALUE;
-        return width;
-    }
-
-    @ModifyExpressionValue(method = "renderTooltipFromComponents", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/Screen;height:I", opcode = Opcodes.GETFIELD, ordinal = 0))
-    private int shouldDoYRePos(int height) {
-        if (debugify$preventVanillaRePos)
-            return Integer.MAX_VALUE;
-        return height;
     }
 
     @ModifyArgs(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;fillGradient(Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V"))
