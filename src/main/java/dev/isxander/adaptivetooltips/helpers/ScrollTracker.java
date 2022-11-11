@@ -135,6 +135,7 @@ public class ScrollTracker {
     private static MutableText toText(OrderedText orderedText) {
         MutableText text = Text.empty();
 
+        // constructs a Text by iterating over each character in OrderedText and appending it with its own style
         orderedText.accept((idx, style, codePoint) -> {
             text.append(Text.literal(Character.toString(codePoint)).setStyle(style));
             return true;
