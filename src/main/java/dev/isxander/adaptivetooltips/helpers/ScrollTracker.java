@@ -92,19 +92,26 @@ public class ScrollTracker {
         Iterator<TooltipComponent> iter1 = l1.iterator();
         Iterator<TooltipComponent> iter2 = l2.iterator();
 
+        // loop through both lists until either ends
         while (iter1.hasNext() && iter2.hasNext()) {
             TooltipComponent c1 = iter1.next();
             TooltipComponent c2 = iter2.next();
 
+            // if the components are same instance, they are the same, go to next element
             if (c1 == c2) continue;
 
+            // no abstract way of comparing tooltip components so we have to check what implementation they are
             if (c1 instanceof OrderedTextTooltipComponent ot1 && c2 instanceof OrderedTextTooltipComponent ot2) {
+                // OrderedText cannot be compared, MutableText can
                 if (!toText(((OrderedTextTooltipComponentAccessor) ot1).getText()).equals(toText(((OrderedTextTooltipComponentAccessor) ot2).getText())))
                     return false;
             } else if (c1 instanceof BundleTooltipComponent bt1 && c2 instanceof BundleTooltipComponent bt2) {
+                // gets the inventory of each bundle and loops through each stack
+                
                 Iterator<ItemStack> i1 = ((BundleTooltipComponentAccessor) bt1).getInventory().iterator();
                 Iterator<ItemStack> i2 = ((BundleTooltipComponentAccessor) bt2).getInventory().iterator();
 
+                // iterate through both bundle inventories until either runs out
                 while (i1.hasNext() && i2.hasNext()) {
                     ItemStack stack1 = i1.next();
                     ItemStack stack2 = i2.next();
@@ -112,10 +119,12 @@ public class ScrollTracker {
                     if (!ItemStack.areEqual(stack1, stack2))
                         return false;
                 }
-
+                
+                // if either inventory has more items, we know they are not the same inventory
                 if (i1.hasNext() || i2.hasNext())
                     return false;
             } else {
+                // no other vanilla implementations of TooltipComponent or the two components are different to eachother
                 return false;
             }
         }
