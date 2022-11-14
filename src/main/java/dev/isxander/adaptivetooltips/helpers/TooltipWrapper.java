@@ -17,7 +17,7 @@ public class TooltipWrapper {
         int width = getMaxWidth(textRenderer, lines);
 
         int maxWidth = 0;
-        switch (AdaptiveTooltipConfig.getInstance().wrapText) {
+        switch (AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText) {
             case OFF ->
                     maxWidth = Integer.MAX_VALUE;
             case SCREEN_WIDTH ->

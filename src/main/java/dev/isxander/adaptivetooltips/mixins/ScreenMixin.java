@@ -58,13 +58,13 @@ public class ScreenMixin {
         debugify$modifiedX = x;
         debugify$modifiedY = y;
 
-        if (AdaptiveTooltipConfig.getInstance().prioritizeTooltipTop)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().prioritizeTooltipTop)
             prioritizeTooltipTop(height);
 
-        if (AdaptiveTooltipConfig.getInstance().bedrockCentering)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().bedrockCentering)
             bedrockCenter(mouseX, mouseY, width, height, debugify$modifiedX, debugify$modifiedY);
 
-        if (AdaptiveTooltipConfig.getInstance().bestCorner)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().bestCorner)
             bestCornerTooltip(mouseX, mouseY, width, height);
 
         scrollTooltip(matrices, components, width, height);
@@ -92,7 +92,7 @@ public class ScreenMixin {
     }
 
     private void bestCornerTooltip(int mouseX, int mouseY, int width, int height) {
-        if ((debugify$modifiedX < 4 || debugify$modifiedY < 4) || AdaptiveTooltipConfig.getInstance().alwaysBestCorner) {
+        if ((debugify$modifiedX < 4 || debugify$modifiedY < 4) || AdaptiveTooltipConfig.INSTANCE.getConfig().alwaysBestCorner) {
             // find the least overlapping (over the mouse) corner to render the tooltip in
             TreeMap<Integer, Pair<Integer, Integer>> corners = new TreeMap<>(); // obstruction amt - x, y
             corners.put(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(5 + height - mouseY, 0), new Pair<>(this.width - 5 - width, 5)); // top right
@@ -135,9 +135,23 @@ public class ScreenMixin {
     @ModifyArgs(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;fillGradient(Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V"))
     private void changeTooltipColorAlpha(Args args) {
         Color colorStart = new Color(args.<Integer>get(7), true);
-        args.set(7, new Color(colorStart.getRed(), colorStart.getGreen(), colorStart.getBlue(), (int) MathHelper.clamp(colorStart.getAlpha() * AdaptiveTooltipConfig.getInstance().tooltipTransparency, 0, 255)).getRGB());
+        args.set(7, new Color(
+                colorStart.getRed(),
+                colorStart.getGreen(),
+                colorStart.getBlue(),
+                (int) MathHelper.clamp(
+                        colorStart.getAlpha() * AdaptiveTooltipConfig.INSTANCE.getConfig().tooltipTransparency,
+                        0, 255)
+        ).getRGB());
 
         Color colorEnd = new Color(args.<Integer>get(8), true);
-        args.set(8, new Color(colorEnd.getRed(), colorEnd.getGreen(), colorEnd.getBlue(), (int) MathHelper.clamp(colorEnd.getAlpha() * AdaptiveTooltipConfig.getInstance().tooltipTransparency, 0, 255)).getRGB());
+        args.set(8, new Color(
+                colorEnd.getRed(),
+                colorEnd.getGreen(),
+                colorEnd.getBlue(),
+                (int) MathHelper.clamp(
+                        colorEnd.getAlpha() * AdaptiveTooltipConfig.INSTANCE.getConfig().tooltipTransparency,
+                        0, 255)
+        ).getRGB());
     }
 }

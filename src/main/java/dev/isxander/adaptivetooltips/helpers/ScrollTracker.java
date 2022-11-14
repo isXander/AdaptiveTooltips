@@ -27,15 +27,15 @@ public class ScrollTracker {
     public static boolean renderedThisFrame = false;
 
     public static void addVerticalScroll(int amt) {
-        if (AdaptiveTooltipConfig.getInstance().scrollDirection == ScrollDirection.NATURAL)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().scrollDirection == ScrollDirection.NATURAL)
             amt = -amt;
-        targetVerticalScroll += amt * AdaptiveTooltipConfig.getInstance().verticalScrollSensitivity;
+        targetVerticalScroll += amt * AdaptiveTooltipConfig.INSTANCE.getConfig().verticalScrollSensitivity;
     }
 
     public static void addHorizontalScroll(int amt) {
-        if (AdaptiveTooltipConfig.getInstance().scrollDirection == ScrollDirection.NATURAL)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().scrollDirection == ScrollDirection.NATURAL)
             amt = -amt;
-        targetHorizontalScroll += amt * AdaptiveTooltipConfig.getInstance().horizontalScrollSensitivity;
+        targetHorizontalScroll += amt * AdaptiveTooltipConfig.INSTANCE.getConfig().horizontalScrollSensitivity;
     }
 
     public static float getVerticalScroll() {
@@ -63,7 +63,7 @@ public class ScrollTracker {
     }
 
     private static void tickAnimation(float tickDelta) {
-        if (AdaptiveTooltipConfig.getInstance().smoothScrolling) {
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().smoothScrolling) {
             currentVerticalScroll = MathHelper.lerp(tickDelta * 0.5f, currentVerticalScroll, targetVerticalScroll);
             currentHorizontalScroll = MathHelper.lerp(tickDelta * 0.5f, currentHorizontalScroll, targetHorizontalScroll);
         } else {

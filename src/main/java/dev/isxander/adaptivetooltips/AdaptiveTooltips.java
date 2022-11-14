@@ -4,6 +4,6 @@ import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 
 public class AdaptiveTooltips {
     public static void onInitializeClient() {
-        AdaptiveTooltipConfig.load();
+        AdaptiveTooltipConfig.INSTANCE.load();
     }
 }

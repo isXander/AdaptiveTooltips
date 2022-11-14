@@ -17,6 +17,7 @@ version = "1.0.0"
 repositories {
     mavenCentral()
     maven("https://maven.isxander.dev/releases")
+    maven("https://maven.isxander.dev/snapshots")
     maven("https://maven.terraformersmc.com/releases")
     maven("https://jitpack.io")
 }

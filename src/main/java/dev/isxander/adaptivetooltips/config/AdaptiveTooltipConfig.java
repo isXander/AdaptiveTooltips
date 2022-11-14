@@ -1,11 +1,10 @@
 package dev.isxander.adaptivetooltips.config;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import dev.isxander.adaptivetooltips.AdaptiveTooltips;
 import dev.isxander.adaptivetooltips.config.gui.KeyCodeController;
 import dev.isxander.yacl.api.*;
+import dev.isxander.yacl.config.ConfigEntry;
+import dev.isxander.yacl.config.GsonConfigInstance;
 import dev.isxander.yacl.gui.controllers.LabelController;
 import dev.isxander.yacl.gui.controllers.TickBoxController;
 import dev.isxander.yacl.gui.controllers.cycling.EnumController;
@@ -16,70 +15,24 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 public class AdaptiveTooltipConfig {
-    private static final Logger logger = LoggerFactory.getLogger("AdaptiveTooltips");
-    private static final Path path = FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json");
-    private static final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeNulls()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
+    public static final GsonConfigInstance<AdaptiveTooltipConfig> INSTANCE = new GsonConfigInstance<>(AdaptiveTooltipConfig.class, FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"), GsonBuilder::setPrettyPrinting);
 
-    private static AdaptiveTooltipConfig instance = null;
-    public static final AdaptiveTooltipConfig DEFAULTS = new AdaptiveTooltipConfig();
+    @ConfigEntry public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
+    @ConfigEntry public boolean prioritizeTooltipTop = true;
+    @ConfigEntry public boolean bedrockCentering = true;
+    @ConfigEntry public boolean bestCorner = false;
+    @ConfigEntry public boolean alwaysBestCorner = false;
+    @ConfigEntry public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
+    @ConfigEntry public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
+    @ConfigEntry public boolean smoothScrolling = true;
+    @ConfigEntry public ScrollDirection scrollDirection = Util.getOperatingSystem() == Util.OperatingSystem.OSX ? ScrollDirection.NATURAL : ScrollDirection.REVERSE;
+    @ConfigEntry public int verticalScrollSensitivity = 10;
+    @ConfigEntry public int horizontalScrollSensitivity = 10;
+    @ConfigEntry public float tooltipTransparency = 1f;
 
-    @Expose public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
-    @Expose public boolean prioritizeTooltipTop = true;
-    @Expose public boolean bedrockCentering = true;
-    @Expose public boolean bestCorner = false;
-    @Expose public boolean alwaysBestCorner = false;
-    @Expose public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
-    @Expose public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
-    @Expose public boolean smoothScrolling = true;
-    @Expose public ScrollDirection scrollDirection = Util.getOperatingSystem() == Util.OperatingSystem.OSX ? ScrollDirection.NATURAL : ScrollDirection.REVERSE;
-    @Expose public int verticalScrollSensitivity = 10;
-    @Expose public int horizontalScrollSensitivity = 10;
-    @Expose public float tooltipTransparency = 1f;
-
-    public void save() {
-        try {
-            logger.info("Saving AdaptiveTooltip config...");
-            Files.writeString(path, gson.toJson(this), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void load() {
-        try {
-            if (Files.notExists(path)) {
-                getInstance().save();
-                return;
-            }
-
-            logger.info("Loading AdaptiveTooltip config...");
-            instance = gson.fromJson(Files.readString(path), AdaptiveTooltipConfig.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static AdaptiveTooltipConfig getInstance() {
-        if (instance == null)
-            instance = new AdaptiveTooltipConfig();
-
-        return instance;
-    }
-
-    public Screen makeScreen(Screen parent) {
+    public static Screen makeScreen(Screen parent) {
         ConfigCategory.Builder categoryBuilder = ConfigCategory.createBuilder()
                 .name(Text.translatable("adaptivetooltips.title"));
 
@@ -90,9 +43,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.text_wrapping.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.text_wrapping.desc"))
                 .binding(
-                        DEFAULTS.wrapText,
-                        () -> wrapText,
-                        val -> wrapText = val
+                        INSTANCE.getDefaults().wrapText,
+                        () -> INSTANCE.getConfig().wrapText,
+                        val -> INSTANCE.getConfig().wrapText = val
                 )
                 .controller(EnumController::new)
                 .build();
@@ -106,9 +59,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.desc"))
                 .binding(
-                        DEFAULTS.prioritizeTooltipTop,
-                        () -> prioritizeTooltipTop,
-                        val -> prioritizeTooltipTop = val
+                        INSTANCE.getDefaults().prioritizeTooltipTop,
+                        () -> INSTANCE.getConfig().prioritizeTooltipTop,
+                        val -> INSTANCE.getConfig().prioritizeTooltipTop = val
                 )
                 .controller(TickBoxController::new)
                 .build();
@@ -116,9 +69,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.bedrock_centering.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.bedrock_centering.desc"))
                 .binding(
-                        DEFAULTS.bedrockCentering,
-                        () -> bedrockCentering,
-                        val -> bedrockCentering = val
+                        INSTANCE.getDefaults().bedrockCentering,
+                        () -> INSTANCE.getConfig().bedrockCentering,
+                        val -> INSTANCE.getConfig().bedrockCentering = val
                 )
                 .controller(TickBoxController::new)
                 .build();
@@ -126,9 +79,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.always_align_corner.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.always_align_corner.desc"))
                 .binding(
-                        DEFAULTS.alwaysBestCorner,
-                        () -> alwaysBestCorner,
-                        val -> alwaysBestCorner = val
+                        INSTANCE.getDefaults().alwaysBestCorner,
+                        () -> INSTANCE.getConfig().alwaysBestCorner,
+                        val -> INSTANCE.getConfig().alwaysBestCorner = val
                 )
                 .controller(TickBoxController::new)
                 .listener((opt, pendingVal) -> {
@@ -144,9 +97,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.align_to_corner.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.align_to_corner.desc"))
                 .binding(
-                        DEFAULTS.bestCorner,
-                        () -> bestCorner,
-                        val -> bestCorner = val
+                        INSTANCE.getDefaults().bestCorner,
+                        () -> INSTANCE.getConfig().bestCorner,
+                        val -> INSTANCE.getConfig().bestCorner = val
                 )
                 .controller(TickBoxController::new)
                 .listener((opt, pendingVal) -> {
@@ -165,24 +118,24 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.group.scrolling.title"))
                 .tooltip(Text.translatable("adaptivetooltips.group.scrolling.desc"));
         Option<Text> scrollingInstructions = Option.createBuilder(Text.class)
-                .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(scrollKeyCode), KeyCodeController.DEFAULT_FORMATTER.apply(horizontalScrollKeyCode))))
+                .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(INSTANCE.getConfig().scrollKeyCode), KeyCodeController.DEFAULT_FORMATTER.apply(INSTANCE.getConfig().horizontalScrollKeyCode))))
                 .controller(LabelController::new)
                 .build();
         Option<Integer> scrollKeyOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.bind.scroll"))
                 .binding(
-                        DEFAULTS.scrollKeyCode,
-                        () -> scrollKeyCode,
-                        val -> scrollKeyCode = val
+                        INSTANCE.getDefaults().scrollKeyCode,
+                        () -> INSTANCE.getConfig().scrollKeyCode,
+                        val -> INSTANCE.getConfig().scrollKeyCode = val
                 )
                 .controller(KeyCodeController::new)
                 .build();
         Option<Integer> horizontalScrollKeyOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.bind.horizontal_scroll"))
                 .binding(
-                        DEFAULTS.horizontalScrollKeyCode,
-                        () -> horizontalScrollKeyCode,
-                        val -> horizontalScrollKeyCode = val
+                        INSTANCE.getDefaults().horizontalScrollKeyCode,
+                        () -> INSTANCE.getConfig().horizontalScrollKeyCode,
+                        val -> INSTANCE.getConfig().horizontalScrollKeyCode = val
                 )
                 .controller(KeyCodeController::new)
                 .build();
@@ -190,9 +143,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
                 .binding(
-                        DEFAULTS.smoothScrolling,
-                        () -> smoothScrolling,
-                        val -> smoothScrolling = val
+                        INSTANCE.getDefaults().smoothScrolling,
+                        () -> INSTANCE.getConfig().smoothScrolling,
+                        val -> INSTANCE.getConfig().smoothScrolling = val
                 )
                 .controller(TickBoxController::new)
                 .build();
@@ -200,9 +153,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.scroll_direction.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.scroll_direction.desc"))
                 .binding(
-                        DEFAULTS.scrollDirection,
-                        () -> scrollDirection,
-                        val -> scrollDirection = val
+                        INSTANCE.getDefaults().scrollDirection,
+                        () -> INSTANCE.getConfig().scrollDirection,
+                        val -> INSTANCE.getConfig().scrollDirection = val
                 )
                 .controller(EnumController::new)
                 .build();
@@ -210,9 +163,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.desc"))
                 .binding(
-                        DEFAULTS.verticalScrollSensitivity,
-                        () -> verticalScrollSensitivity,
-                        val -> verticalScrollSensitivity = val
+                        INSTANCE.getDefaults().verticalScrollSensitivity,
+                        () -> INSTANCE.getConfig().verticalScrollSensitivity,
+                        val -> INSTANCE.getConfig().verticalScrollSensitivity = val
                 )
                 .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
                 .build();
@@ -220,9 +173,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.desc"))
                 .binding(
-                        DEFAULTS.horizontalScrollSensitivity,
-                        () -> horizontalScrollSensitivity,
-                        val -> horizontalScrollSensitivity = val
+                        INSTANCE.getDefaults().horizontalScrollSensitivity,
+                        () -> INSTANCE.getConfig().horizontalScrollSensitivity,
+                        val -> INSTANCE.getConfig().horizontalScrollSensitivity = val
                 )
                 .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
                 .build();
@@ -242,9 +195,9 @@ public class AdaptiveTooltipConfig {
                 .name(Text.translatable("adaptivetooltips.opt.tooltip_transparency.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.tooltip_transparency.desc"))
                 .binding(
-                        DEFAULTS.tooltipTransparency,
-                        () -> tooltipTransparency,
-                        val -> tooltipTransparency = val
+                        INSTANCE.getDefaults().tooltipTransparency,
+                        () -> INSTANCE.getConfig().tooltipTransparency,
+                        val -> INSTANCE.getConfig().tooltipTransparency = val
                 )
                 .controller(opt -> new FloatSliderController(opt, 0f, 1.5f, 0.05f, val -> val == 1f ? Text.translatable("adaptivetooltips.format.vanilla") : Text.of(String.format("%+,.0f%%", (val - 1) * 100))))
                 .build();
@@ -254,155 +207,8 @@ public class AdaptiveTooltipConfig {
         return YetAnotherConfigLib.createBuilder()
                 .title(Text.translatable("adaptivetooltips.title"))
                 .category(categoryBuilder.build())
-                .save(this::save)
+                .save(INSTANCE::save)
                 .build()
                 .generateScreen(parent);
-
-//        return YetAnotherConfigLib.createBuilder()
-//                .title(Text.translatable("adaptivetooltips.title"))
-//                .category(ConfigCategory.createBuilder()
-//                        .name(Text.translatable("adaptivetooltips.title"))
-//                        .group(OptionGroup.createBuilder()
-//                                .name(Text.translatable("adaptivetooltips.group.content_manipulation.title"))
-//                                .tooltip(Text.translatable("adaptivetooltips.group.content_manipulation.desc"))
-//                                .option(Option.createBuilder(WrapTextBehaviour.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.text_wrapping.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.text_wrapping.desc"))
-//                                        .binding(
-//                                                DEFAULTS.wrapText,
-//                                                () -> wrapText,
-//                                                val -> wrapText = val
-//                                        )
-//                                        .controller(EnumController::new)
-//                                        .build())
-//                                .build())
-//                        .group(OptionGroup.createBuilder()
-//                                .name(Text.translatable("adaptivetooltips.group.positioning.title"))
-//                                .tooltip(Text.translatable("adaptivetooltips.group.positioning.desc"))
-//                                .option(Option.createBuilder(boolean.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.desc"))
-//                                        .binding(
-//                                                DEFAULTS.prioritizeTooltipTop,
-//                                                () -> prioritizeTooltipTop,
-//                                                val -> prioritizeTooltipTop = val
-//                                        )
-//                                        .controller(TickBoxController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(boolean.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.bedrock_centering.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.bedrock_centering.desc"))
-//                                        .binding(
-//                                                DEFAULTS.bedrockCentering,
-//                                                () -> bedrockCentering,
-//                                                val -> bedrockCentering = val
-//                                        )
-//                                        .controller(TickBoxController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(boolean.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.align_to_corner.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.align_to_corner.desc"))
-//                                        .binding(
-//                                                DEFAULTS.bestCorner,
-//                                                () -> bestCorner,
-//                                                val -> bestCorner = val
-//                                        )
-//                                        .controller(TickBoxController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(boolean.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.always_align_corner.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.always_align_corner.desc"))
-//                                        .binding(
-//                                                DEFAULTS.alwaysBestCorner,
-//                                                () -> alwaysBestCorner,
-//                                                val -> alwaysBestCorner = val
-//                                        )
-//                                        .controller(TickBoxController::new)
-//                                        .build())
-//                                .build())
-//                        .group(OptionGroup.createBuilder()
-//                                .name(Text.translatable("adaptivetooltips.group.scrolling.title"))
-//                                .tooltip(Text.translatable("adaptivetooltips.group.scrolling.desc"))
-//                                .option(Option.createBuilder(Text.class)
-//                                        .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(scrollKeyCode), KeyCodeController.DEFAULT_FORMATTER.apply(horizontalScrollKeyCode))))
-//                                        .controller(LabelController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(int.class)
-//                                        .name(Text.translatable("adaptivetooltips.bind.scroll"))
-//                                        .binding(
-//                                                DEFAULTS.scrollKeyCode,
-//                                                () -> scrollKeyCode,
-//                                                val -> scrollKeyCode = val
-//                                        )
-//                                        .controller(KeyCodeController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(int.class)
-//                                        .name(Text.translatable("adaptivetooltips.bind.horizontal_scroll"))
-//                                        .binding(
-//                                                DEFAULTS.horizontalScrollKeyCode,
-//                                                () -> horizontalScrollKeyCode,
-//                                                val -> horizontalScrollKeyCode = val
-//                                        )
-//                                        .controller(KeyCodeController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(boolean.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
-//                                        .binding(
-//                                                DEFAULTS.smoothScrolling,
-//                                                () -> smoothScrolling,
-//                                                val -> smoothScrolling = val
-//                                        )
-//                                        .controller(TickBoxController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(ScrollDirection.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.scroll_direction.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.scroll_direction.desc"))
-//                                        .binding(
-//                                                DEFAULTS.scrollDirection,
-//                                                () -> scrollDirection,
-//                                                val -> scrollDirection = val
-//                                        )
-//                                        .controller(EnumController::new)
-//                                        .build())
-//                                .option(Option.createBuilder(int.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.desc"))
-//                                        .binding(
-//                                                DEFAULTS.verticalScrollSensitivity,
-//                                                () -> verticalScrollSensitivity,
-//                                                val -> verticalScrollSensitivity = val
-//                                        )
-//                                        .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
-//                                        .build())
-//                                .option(Option.createBuilder(int.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.desc"))
-//                                        .binding(
-//                                                DEFAULTS.horizontalScrollSensitivity,
-//                                                () -> horizontalScrollSensitivity,
-//                                                val -> horizontalScrollSensitivity = val
-//                                        )
-//                                        .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
-//                                        .build())
-//                                .build())
-//                        .group(OptionGroup.createBuilder()
-//                                .name(Text.translatable("adaptivetooltips.group.style.title"))
-//                                .tooltip(Text.translatable("adaptivetooltips.group.style.desc"))
-//                                .option(Option.createBuilder(float.class)
-//                                        .name(Text.translatable("adaptivetooltips.opt.tooltip_transparency.title"))
-//                                        .tooltip(Text.translatable("adaptivetooltips.opt.tooltip_transparency.desc"))
-//                                        .binding(
-//                                                DEFAULTS.tooltipTransparency,
-//                                                () -> tooltipTransparency,
-//                                                val -> tooltipTransparency = val
-//                                        )
-//                                        .controller(opt -> new FloatSliderController(opt, 0f, 1.5f, 0.05f, val -> val == 1f ? Text.translatable("adaptivetooltips.format.vanilla") : Text.of(String.format("%+,.0f%%", (val - 1) * 100))))
-//                                        .build())
-//                                .build())
-//                        .build())
-//                .save(this::save)
-//                .build()
-//                .generateScreen(parent);
     }
 }
