@@ -47,7 +47,7 @@ maximum of your screen width (intended to be paired with **Bedrock Centering**),
 which allows tooltip lines to fill a maximum of what's left until the tooltip reaches the end of the screen,
 picking either the left or the right depending on which would require less wrapping.
 
-*insert screenshot of comparison on remaining/off, specifically mentioning that this is remaining*
+![Remaining Width Wrapping On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19/screenshots/remaining-width-wrapping.png)
 
 ### Prioritize Tooltip Top
 
@@ -55,7 +55,7 @@ I'm actually surprised even Mojang didn't think of adding this one, by default, 
 your screen limit their bottom to the edge of the screen, not the top. This results in you being able to read
 the often less important bottom of the tooltip before the top. This fix addresses that.
 
-*insert screenshot of comparison on/off*
+![Prioritize Tooltip Top On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19/screenshots/prioritize-tooltip-top.png)
 
 ### Bedrock Centering
 
@@ -63,7 +63,7 @@ This feature grants parity between Java and Bedrock Edition. By default, Bedrock
 the tooltip if it is too long to fit on either the left or the right, this adds that. For the best 
 experience, it is best to pair this with **Screen Width Text Wrapping**.
 
-*insert screenshot of comparison on/off*
+![Bedrock Centering On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19/screenshots/bedrock-centering.png)
 
 ### Best Corner
 
