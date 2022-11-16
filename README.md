@@ -17,8 +17,6 @@
 
 Highly configurable tooltip rendering, so you can *always* read them!
 
-<img src="https://raw.githubusercontent.com/isXander/FabricModTemplate/1.19/.github/screenshot.png" width="650" alt="Screenshot">
-
 </center></div>
 
 
