@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "BundleTooltipComponentAccessor",
+    "DefaultTooltipPositionerMixin",
     "GameRendererMixin",
     "MouseMixin",
     "OrderedTextTooltipComponentAccessor",

@@ -1,10 +1,15 @@
 package dev.isxander.adaptivetooltips.mixins;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
-import dev.isxander.adaptivetooltips.helpers.TooltipWrapper;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import dev.isxander.adaptivetooltips.helpers.*;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
-import net.minecraft.client.MinecraftClient;
+import dev.isxander.adaptivetooltips.helpers.positioner.BedrockCenteringPositioner;
+import dev.isxander.adaptivetooltips.helpers.positioner.BestCornerPositioner;
+import dev.isxander.adaptivetooltips.helpers.positioner.PrioritizeTooltipTopPositioner;
+import dev.isxander.adaptivetooltips.helpers.positioner.TooltipPositioner;
+import net.minecraft.class_8000;
+import net.minecraft.class_8001;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -12,14 +17,11 @@ import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Vector2ic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.awt.*;
@@ -34,9 +36,6 @@ public class ScreenMixin {
     @Shadow public int height;
 
     @Shadow protected TextRenderer textRenderer;
-
-    @Unique private int debugify$modifiedX;
-    @Unique private int debugify$modifiedY;
 
     @Redirect(method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"))
     private void wrapText(Screen instance, MatrixStack matrices, List<? extends OrderedText> lines, int x, int y, MatrixStack dontuse, Text text) {
@@ -53,87 +52,30 @@ public class ScreenMixin {
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, instance.toList(), x).stream();
     }
 
-    @Inject(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void moveTooltip(MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY, CallbackInfo ci, int width, int height, int x, int y) {
-        debugify$modifiedX = x;
-        debugify$modifiedY = y;
+    @WrapOperation(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_8000;method_47944(Lnet/minecraft/client/gui/screen/Screen;IIII)Lorg/joml/Vector2ic;"))
+    private Vector2ic moveTooltip(class_8000 clientTooltipPositioner, Screen screen, int x, int y, int width, int height, Operation<Vector2ic> operation, MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY) {
+        Vector2ic currentPosition = operation.call(clientTooltipPositioner, screen, x, y, width, height);
 
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().prioritizeTooltipTop)
-            prioritizeTooltipTop(height);
+        if (!(clientTooltipPositioner instanceof class_8001) && !AdaptiveTooltipConfig.INSTANCE.getConfig().applyTweaksToAllPositioners) // class_8001 = DefaultTooltipPositioner
+            return currentPosition;
 
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().bedrockCentering)
-            bedrockCenter(mouseX, mouseY, width, height, debugify$modifiedX, debugify$modifiedY);
-
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().bestCorner)
-            bestCornerTooltip(mouseX, mouseY, width, height);
-
-        scrollTooltip(matrices, components, width, height);
-    }
-
-    private void bedrockCenter(int mouseX, int mouseY, int width, int height, int x, int y) {
-        if (x < 4) {
-            debugify$modifiedX = MathHelper.clamp(mouseX - width / 2, 6, this.width - width - 6);
-            debugify$modifiedY = mouseY - height - 12;
-
-            if (debugify$modifiedY < 6) {
-                // find amount of obstruction to decide if it
-                // is best to be above or below cursor
-                var below = mouseY + 12;
-                var belowObstruction = below + height - this.height;
-                var aboveObstruction = -debugify$modifiedY;
-
-                if (belowObstruction < aboveObstruction) {
-                    debugify$modifiedY = below;
-                }
-            }
-        } else if (y + height > this.height + 2) {
-            debugify$modifiedY = Math.max(this.height - height - 4, 4);
+        for (TooltipPositioner tooltipPositioner : List.of(
+                new PrioritizeTooltipTopPositioner(),
+                new BedrockCenteringPositioner(),
+                new BestCornerPositioner()
+        )) {
+            Optional<Vector2ic> position = tooltipPositioner.repositionTooltip(currentPosition.x(), currentPosition.y(), width, height, mouseX, mouseY, this.width, this.height);
+            if (position.isPresent())
+                currentPosition = position.get();
         }
+
+        ScrollTracker.scroll(matrices, components, currentPosition.x(), currentPosition.y(), width, height, this.width, this.height);
+
+        return currentPosition;
     }
 
-    private void bestCornerTooltip(int mouseX, int mouseY, int width, int height) {
-        if ((debugify$modifiedX < 4 || debugify$modifiedY < 4) || AdaptiveTooltipConfig.INSTANCE.getConfig().alwaysBestCorner) {
-            // find the least overlapping (over the mouse) corner to render the tooltip in
-            TreeMap<Integer, Pair<Integer, Integer>> corners = new TreeMap<>(); // obstruction amt - x, y
-            corners.put(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(5 + height - mouseY, 0), new Pair<>(this.width - 5 - width, 5)); // top right
-            corners.put(Math.max((5 + width - mouseX), 0) * Math.max(mouseY - (this.height - 5 - height), 0), new Pair<>(5, this.height - 5 - height)); // bottom left
-            corners.put(Math.max(mouseX - (this.width - 5 - width), 0) * Math.max(mouseY - (this.height - 5 - height), 0), new Pair<>(this.width - 5 - width, this.height - 5 - height)); // bottom right
-            corners.put(Math.max(5 + width - mouseX, 0) * Math.max(5 + height - mouseY, 0), new Pair<>(5, 5)); // top left
-            // top left must be put last to rely on that maps override identical keys so if each overlapping is less than -10 it uses top left
-
-            Pair<Integer, Integer> bestCorner = corners.firstEntry().getValue();
-            debugify$modifiedX = bestCorner.getLeft();
-            debugify$modifiedY = bestCorner.getRight();
-        }
-    }
-
-    private void prioritizeTooltipTop(int height) {
-        if (height > this.height) {
-            debugify$modifiedY = 4;
-        }
-    }
-
-    private void scrollTooltip(MatrixStack matrices, List<TooltipComponent> components, int width, int height) {
-        ScrollTracker.tick(components, debugify$modifiedX, debugify$modifiedY, width, height, this.width, this.height, MinecraftClient.getInstance().getLastFrameDuration());
-
-        matrices.translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
-    }
-
-    /**
-     * cursed modifyvariable because you can't modify localcaptures
-     */
-    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), ordinal = 4)
-    private int modifyX(int x) {
-        return debugify$modifiedX;
-    }
-
-    @ModifyVariable(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), ordinal = 5)
-    private int modifyY(int y) {
-        return debugify$modifiedY;
-    }
-
-    @ModifyArgs(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;fillGradient(Lnet/minecraft/util/math/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V"))
-    private void changeTooltipColorAlpha(Args args) {
+    @ModifyArgs(method = "method_47943", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawableHelper;fillGradient(Lorg/joml/Matrix4f;Lnet/minecraft/client/render/BufferBuilder;IIIIIII)V"))
+    private static void changeTooltipColorAlpha(Args args) {
         Color colorStart = new Color(args.<Integer>get(7), true);
         args.set(7, new Color(
                 colorStart.getRed(),

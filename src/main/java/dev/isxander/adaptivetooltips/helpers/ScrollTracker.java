@@ -4,9 +4,11 @@ import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.config.ScrollDirection;
 import dev.isxander.adaptivetooltips.mixins.BundleTooltipComponentAccessor;
 import dev.isxander.adaptivetooltips.mixins.OrderedTextTooltipComponentAccessor;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.BundleTooltipComponent;
 import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -46,7 +48,13 @@ public class ScrollTracker {
         return currentHorizontalScroll;
     }
 
-    public static void tick(List<TooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight, float tickDelta) {
+    public static void scroll(MatrixStack matrices, List<TooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight) {
+        tick(components, x, y, width, height, screenWidth, screenHeight, MinecraftClient.getInstance().getLastFrameDuration());
+
+        matrices.translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
+    }
+
+    private static void tick(List<TooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight, float tickDelta) {
         renderedThisFrame = true;
 
         resetIfNeeded(components);
@@ -56,7 +64,7 @@ public class ScrollTracker {
         if (width < screenWidth)
             targetHorizontalScroll = 0;
 
-        targetVerticalScroll = MathHelper.clamp(targetVerticalScroll, Math.min(screenHeight - (y + height) - 4, 0), Math.max(-y, 0));
+        targetVerticalScroll = MathHelper.clamp(targetVerticalScroll, Math.min(screenHeight - (y + height) - 4, 0), Math.max(-y + 4, 0));
         targetHorizontalScroll = MathHelper.clamp(targetHorizontalScroll, Math.min(screenWidth - (x + width) - 4, 0), Math.max(-x + 4, 0));
 
         tickAnimation(tickDelta);

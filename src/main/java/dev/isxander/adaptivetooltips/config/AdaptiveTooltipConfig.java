@@ -24,6 +24,8 @@ public class AdaptiveTooltipConfig {
     @ConfigEntry public boolean bedrockCentering = true;
     @ConfigEntry public boolean bestCorner = false;
     @ConfigEntry public boolean alwaysBestCorner = false;
+    @ConfigEntry public boolean preventVanillaClamping = true;
+    @ConfigEntry public boolean applyTweaksToAllPositioners = false;
     @ConfigEntry public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @ConfigEntry public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
     @ConfigEntry public boolean smoothScrolling = true;
@@ -39,7 +41,7 @@ public class AdaptiveTooltipConfig {
         OptionGroup.Builder contentManipulationGroup = OptionGroup.createBuilder()
                 .name(Text.translatable("adaptivetooltips.group.content_manipulation.title"))
                 .tooltip(Text.translatable("adaptivetooltips.group.content_manipulation.desc"));
-        Option<WrapTextBehaviour> textWrappingOpt = Option.createBuilder(WrapTextBehaviour.class)
+        var textWrappingOpt = Option.createBuilder(WrapTextBehaviour.class)
                 .name(Text.translatable("adaptivetooltips.opt.text_wrapping.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.text_wrapping.desc"))
                 .binding(
@@ -55,7 +57,7 @@ public class AdaptiveTooltipConfig {
         OptionGroup.Builder positioningGroup = OptionGroup.createBuilder()
                 .name(Text.translatable("adaptivetooltips.group.positioning.title"))
                 .tooltip(Text.translatable("adaptivetooltips.group.positioning.desc"));
-        Option<Boolean> prioritizeTooltipTopOpt = Option.createBuilder(boolean.class)
+        var prioritizeTooltipTopOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.prioritize_tooltip_top.desc"))
                 .binding(
@@ -65,7 +67,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(TickBoxController::new)
                 .build();
-        Option<Boolean> bedrockCenteringOpt = Option.createBuilder(boolean.class)
+        var bedrockCenteringOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.bedrock_centering.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.bedrock_centering.desc"))
                 .binding(
@@ -75,7 +77,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(TickBoxController::new)
                 .build();
-        Option<Boolean> alwaysAlignToCornerOpt = Option.createBuilder(boolean.class)
+        var alwaysAlignToCornerOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.always_align_corner.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.always_align_corner.desc"))
                 .binding(
@@ -93,7 +95,7 @@ public class AdaptiveTooltipConfig {
                     }
                 })
                 .build();
-        Option<Boolean> alignToCornerOpt = Option.createBuilder(boolean.class)
+        var alignToCornerOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.align_to_corner.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.align_to_corner.desc"))
                 .binding(
@@ -108,20 +110,46 @@ public class AdaptiveTooltipConfig {
                         alwaysAlignToCornerOpt.requestSet(false);
                 })
                 .build();
+        var preventVanillaClampingOpt = Option.createBuilder(boolean.class)
+                .name(Text.translatable("adaptivetooltips.opt.prevent_vanilla_clamping.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.prevent_vanilla_clamping.desc"))
+                .binding(
+                        INSTANCE.getDefaults().preventVanillaClamping,
+                        () -> INSTANCE.getConfig().preventVanillaClamping,
+                        val -> INSTANCE.getConfig().preventVanillaClamping = val
+                )
+                .controller(TickBoxController::new)
+                .listener((opt, val) -> {
+                    bedrockCenteringOpt.setAvailable(val);
+                    if (!val) bedrockCenteringOpt.requestSet(false);
+                })
+                .build();
+        var applyTweaksToAllPositioners = Option.createBuilder(boolean.class)
+                .name(Text.translatable("adaptivetooltips.opt.apply_tweaks_to_all_positioners.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.apply_tweaks_to_all_positioners.desc"))
+                .binding(
+                        INSTANCE.getDefaults().applyTweaksToAllPositioners,
+                        () -> INSTANCE.getConfig().applyTweaksToAllPositioners,
+                        val -> INSTANCE.getConfig().applyTweaksToAllPositioners = val
+                )
+                .controller(TickBoxController::new)
+                .build();
         positioningGroup.option(prioritizeTooltipTopOpt);
         positioningGroup.option(bedrockCenteringOpt);
         positioningGroup.option(alignToCornerOpt);
         positioningGroup.option(alwaysAlignToCornerOpt);
+        positioningGroup.option(preventVanillaClampingOpt);
+        positioningGroup.option(applyTweaksToAllPositioners);
         categoryBuilder.group(positioningGroup.build());
 
         OptionGroup.Builder scrollingGroup = OptionGroup.createBuilder()
                 .name(Text.translatable("adaptivetooltips.group.scrolling.title"))
                 .tooltip(Text.translatable("adaptivetooltips.group.scrolling.desc"));
-        Option<Text> scrollingInstructions = Option.createBuilder(Text.class)
+        var scrollingInstructions = Option.createBuilder(Text.class)
                 .binding(Binding.immutable(Text.translatable("adaptivetooltips.label.scrolling_instructions", KeyCodeController.DEFAULT_FORMATTER.apply(INSTANCE.getConfig().scrollKeyCode), KeyCodeController.DEFAULT_FORMATTER.apply(INSTANCE.getConfig().horizontalScrollKeyCode))))
                 .controller(LabelController::new)
                 .build();
-        Option<Integer> scrollKeyOpt = Option.createBuilder(int.class)
+        var scrollKeyOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.bind.scroll"))
                 .binding(
                         INSTANCE.getDefaults().scrollKeyCode,
@@ -130,7 +158,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(KeyCodeController::new)
                 .build();
-        Option<Integer> horizontalScrollKeyOpt = Option.createBuilder(int.class)
+        var horizontalScrollKeyOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.bind.horizontal_scroll"))
                 .binding(
                         INSTANCE.getDefaults().horizontalScrollKeyCode,
@@ -139,7 +167,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(KeyCodeController::new)
                 .build();
-        Option<Boolean> smoothScrollingOpt = Option.createBuilder(boolean.class)
+        var smoothScrollingOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.smooth_scrolling.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.smooth_scrolling.desc"))
                 .binding(
@@ -149,7 +177,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(TickBoxController::new)
                 .build();
-        Option<ScrollDirection> scrollDirectionOpt = Option.createBuilder(ScrollDirection.class)
+        var scrollDirectionOpt = Option.createBuilder(ScrollDirection.class)
                 .name(Text.translatable("adaptivetooltips.opt.scroll_direction.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.scroll_direction.desc"))
                 .binding(
@@ -159,7 +187,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(EnumController::new)
                 .build();
-        Option<Integer> verticalScrollSensOpt = Option.createBuilder(int.class)
+        var verticalScrollSensOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.vertical_scroll_sensitivity.desc"))
                 .binding(
@@ -169,7 +197,7 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(opt -> new IntegerSliderController(opt, 5, 20, 1, val -> Text.translatable("adaptivetooltips.format.pixels", val)))
                 .build();
-        Option<Integer> horizontalScrollSensOpt = Option.createBuilder(int.class)
+        var horizontalScrollSensOpt = Option.createBuilder(int.class)
                 .name(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.horizontal_scroll_sensitivity.desc"))
                 .binding(
