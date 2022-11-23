@@ -31,10 +31,10 @@
   ],
   "depends": {
     "fabricloader": ">=0.14.0",
-    "minecraft": "1.19.x",
+    "minecraft": "~1.19.3-beta.2",
     "java": ">=17",
     "fabric": "*",
-    "yet-another-config-lib": ">=1.7.1"
+    "yet-another-config-lib": "2.x.x"
   },
   "breaks": {
     "tooltipfix": "*"
