@@ -7,7 +7,7 @@ import org.joml.Vector2ic;
 import java.util.Optional;
 import java.util.TreeMap;
 
-public class BestCornerPositioner implements TooltipPositioner {
+public class BestCornerPositionModule implements TooltipPositionModule {
     @Override
     public Optional<Vector2ic> repositionTooltip(int x, int y, int width, int height, int mouseX, int mouseY, int screenWidth, int screenHeight) {
         if (!AdaptiveTooltipConfig.INSTANCE.getConfig().bestCorner)

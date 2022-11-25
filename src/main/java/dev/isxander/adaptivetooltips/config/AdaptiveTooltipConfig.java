@@ -13,19 +13,23 @@ import dev.isxander.yacl.gui.controllers.slider.IntegerSliderController;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 public class AdaptiveTooltipConfig {
     public static final GsonConfigInstance<AdaptiveTooltipConfig> INSTANCE = new GsonConfigInstance<>(AdaptiveTooltipConfig.class, FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"), GsonBuilder::setPrettyPrinting);
 
     @ConfigEntry public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
+    @ConfigEntry public boolean preventVanillaWrapping = false;
     @ConfigEntry public boolean prioritizeTooltipTop = true;
     @ConfigEntry public boolean bedrockCentering = true;
     @ConfigEntry public boolean bestCorner = false;
     @ConfigEntry public boolean alwaysBestCorner = false;
     @ConfigEntry public boolean preventVanillaClamping = true;
-    @ConfigEntry public boolean applyTweaksToAllPositioners = false;
+    @ConfigEntry public boolean onlyRepositionHoverTooltips = true;
+    @ConfigEntry public boolean useYACLTooltipPositioner = false;
     @ConfigEntry public int scrollKeyCode = InputUtil.GLFW_KEY_LEFT_ALT;
     @ConfigEntry public int horizontalScrollKeyCode = InputUtil.GLFW_KEY_LEFT_CONTROL;
     @ConfigEntry public boolean smoothScrolling = true;
@@ -33,6 +37,7 @@ public class AdaptiveTooltipConfig {
     @ConfigEntry public int verticalScrollSensitivity = 10;
     @ConfigEntry public int horizontalScrollSensitivity = 10;
     @ConfigEntry public float tooltipTransparency = 1f;
+    @ConfigEntry public boolean removeFirstLinePadding = false;
 
     public static Screen makeScreen(Screen parent) {
         ConfigCategory.Builder categoryBuilder = ConfigCategory.createBuilder()
@@ -44,6 +49,12 @@ public class AdaptiveTooltipConfig {
         var textWrappingOpt = Option.createBuilder(WrapTextBehaviour.class)
                 .name(Text.translatable("adaptivetooltips.opt.text_wrapping.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.text_wrapping.desc"))
+                .tooltip(value -> {
+                    MutableText tooltip = Text.translatable("options.generic_value", value.getDisplayName(), value.getTooltip());
+                    if (value == WrapTextBehaviour.REMAINING_WIDTH)
+                        tooltip.append("\n").append(Text.translatable("adaptivetooltips.wrap_text_behaviour.remaining_width.warning").formatted(Formatting.RED));
+                    return tooltip.formatted(Formatting.GRAY);
+                })
                 .binding(
                         INSTANCE.getDefaults().wrapText,
                         () -> INSTANCE.getConfig().wrapText,
@@ -51,7 +62,18 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(EnumController::new)
                 .build();
+        var preventVanillaWrappingOpt = Option.createBuilder(boolean.class)
+                .name(Text.translatable("adaptivetooltips.opt.prevent_vanilla_wrapping.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.prevent_vanilla_wrapping.desc"))
+                .binding(
+                        INSTANCE.getDefaults().preventVanillaWrapping,
+                        () -> INSTANCE.getConfig().preventVanillaWrapping,
+                        val -> INSTANCE.getConfig().preventVanillaWrapping = val
+                )
+                .controller(TickBoxController::new)
+                .build();
         contentManipulationGroup.option(textWrappingOpt);
+        contentManipulationGroup.option(preventVanillaWrappingOpt);
         categoryBuilder.group(contentManipulationGroup.build());
 
         OptionGroup.Builder positioningGroup = OptionGroup.createBuilder()
@@ -125,12 +147,22 @@ public class AdaptiveTooltipConfig {
                 })
                 .build();
         var applyTweaksToAllPositioners = Option.createBuilder(boolean.class)
-                .name(Text.translatable("adaptivetooltips.opt.apply_tweaks_to_all_positioners.title"))
-                .tooltip(Text.translatable("adaptivetooltips.opt.apply_tweaks_to_all_positioners.desc"))
+                .name(Text.translatable("adaptivetooltips.opt.only_reposition_hover_tooltips.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.only_reposition_hover_tooltips.desc"))
                 .binding(
-                        INSTANCE.getDefaults().applyTweaksToAllPositioners,
-                        () -> INSTANCE.getConfig().applyTweaksToAllPositioners,
-                        val -> INSTANCE.getConfig().applyTweaksToAllPositioners = val
+                        INSTANCE.getDefaults().onlyRepositionHoverTooltips,
+                        () -> INSTANCE.getConfig().onlyRepositionHoverTooltips,
+                        val -> INSTANCE.getConfig().onlyRepositionHoverTooltips = val
+                )
+                .controller(TickBoxController::new)
+                .build();
+        var useYACLTooltipPositionerOpt = Option.createBuilder(boolean.class)
+                .name(Text.translatable("adaptivetooltips.opt.use_yacl_tooltip_positioner.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.use_yacl_tooltip_positioner.desc"))
+                .binding(
+                        INSTANCE.getDefaults().useYACLTooltipPositioner,
+                        () -> INSTANCE.getConfig().useYACLTooltipPositioner,
+                        val -> INSTANCE.getConfig().useYACLTooltipPositioner = val
                 )
                 .controller(TickBoxController::new)
                 .build();
@@ -140,6 +172,7 @@ public class AdaptiveTooltipConfig {
         positioningGroup.option(alwaysAlignToCornerOpt);
         positioningGroup.option(preventVanillaClampingOpt);
         positioningGroup.option(applyTweaksToAllPositioners);
+        positioningGroup.option(useYACLTooltipPositionerOpt);
         categoryBuilder.group(positioningGroup.build());
 
         OptionGroup.Builder scrollingGroup = OptionGroup.createBuilder()
@@ -219,7 +252,7 @@ public class AdaptiveTooltipConfig {
         OptionGroup.Builder styleGroup = OptionGroup.createBuilder()
                 .name(Text.translatable("adaptivetooltips.group.style.title"))
                 .tooltip(Text.translatable("adaptivetooltips.group.style.desc"));
-        Option<Float> tooltipTransparencyOpt = Option.createBuilder(float.class)
+        var tooltipTransparencyOpt = Option.createBuilder(float.class)
                 .name(Text.translatable("adaptivetooltips.opt.tooltip_transparency.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.tooltip_transparency.desc"))
                 .binding(
@@ -229,7 +262,18 @@ public class AdaptiveTooltipConfig {
                 )
                 .controller(opt -> new FloatSliderController(opt, 0f, 1.5f, 0.05f, val -> val == 1f ? Text.translatable("adaptivetooltips.format.vanilla") : Text.of(String.format("%+,.0f%%", (val - 1) * 100))))
                 .build();
+        var removeFirstLinePaddingOpt = Option.createBuilder(boolean.class)
+                .name(Text.translatable("adaptivetooltips.opt.remove_first_line_padding.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.remove_first_line_padding.desc"))
+                .binding(
+                        INSTANCE.getDefaults().removeFirstLinePadding,
+                        () -> INSTANCE.getConfig().removeFirstLinePadding,
+                        val -> INSTANCE.getConfig().removeFirstLinePadding = val
+                )
+                .controller(TickBoxController::new)
+                .build();
         styleGroup.option(tooltipTransparencyOpt);
+        styleGroup.option(removeFirstLinePaddingOpt);
         categoryBuilder.group(styleGroup.build());
 
         return YetAnotherConfigLib.createBuilder()

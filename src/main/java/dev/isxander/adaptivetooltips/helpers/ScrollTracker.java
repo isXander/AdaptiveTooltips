@@ -4,6 +4,7 @@ import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.config.ScrollDirection;
 import dev.isxander.adaptivetooltips.mixins.BundleTooltipComponentAccessor;
 import dev.isxander.adaptivetooltips.mixins.OrderedTextTooltipComponentAccessor;
+import dev.isxander.adaptivetooltips.utils.TextUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.BundleTooltipComponent;
 import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
@@ -111,7 +112,7 @@ public class ScrollTracker {
             // no abstract way of comparing tooltip components so we have to check what implementation they are
             if (c1 instanceof OrderedTextTooltipComponent ot1 && c2 instanceof OrderedTextTooltipComponent ot2) {
                 // OrderedText cannot be compared, MutableText can
-                if (!toText(((OrderedTextTooltipComponentAccessor) ot1).getText()).equals(toText(((OrderedTextTooltipComponentAccessor) ot2).getText())))
+                if (!TextUtil.toText(((OrderedTextTooltipComponentAccessor) ot1).getText()).equals(TextUtil.toText(((OrderedTextTooltipComponentAccessor) ot2).getText())))
                     return false;
             } else if (c1 instanceof BundleTooltipComponent bt1 && c2 instanceof BundleTooltipComponent bt2) {
                 // gets the inventory of each bundle and loops through each stack
@@ -138,17 +139,5 @@ public class ScrollTracker {
         }
 
         return !(iter1.hasNext() || iter2.hasNext());
-    }
-
-    private static MutableText toText(OrderedText orderedText) {
-        MutableText text = Text.empty();
-
-        // constructs a Text by iterating over each character in OrderedText and appending it with its own style
-        orderedText.accept((idx, style, codePoint) -> {
-            text.append(Text.literal(Character.toString(codePoint)).setStyle(style));
-            return true;
-        });
-
-        return text;
     }
 }

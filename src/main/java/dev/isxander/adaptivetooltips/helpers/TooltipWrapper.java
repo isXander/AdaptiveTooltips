@@ -3,15 +3,16 @@ package dev.isxander.adaptivetooltips.helpers;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.text.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class TooltipWrapper {
-    public static List<OrderedText> wrapTooltipLines(Screen screen, TextRenderer textRenderer, List<Text> lines, int x) {
+    public static List<OrderedText> wrapTooltipLines(Screen screen, TextRenderer textRenderer, List<? extends Text> lines, int x, TooltipPositioner tooltipPositioner) {
         if (lines.stream().allMatch(text -> text.getString().isBlank()))
             return List.of();
         int width = getMaxWidth(textRenderer, lines);
@@ -23,11 +24,17 @@ public class TooltipWrapper {
             case SCREEN_WIDTH ->
                     maxWidth = screen.width - 15;
             case REMAINING_WIDTH -> {
-                maxWidth = screen.width - x - 15;
+                if (tooltipPositioner instanceof HoveredTooltipPositioner) {
+                    maxWidth = screen.width - x - 15;
 
-                if (x + 12 + width > screen.width)
-                    maxWidth = Math.max(maxWidth, x - 20);
+                    if (x + 12 + width > screen.width)
+                        maxWidth = Math.max(maxWidth, x - 20);
+                } else {
+                    maxWidth = Integer.MAX_VALUE;
+                }
             }
+            case HALF_SCREEN_WIDTH ->
+                maxWidth = screen.width / 2;
         }
 
         if (width <= maxWidth)
@@ -41,7 +48,7 @@ public class TooltipWrapper {
         return wrapped;
     }
 
-    private static int getMaxWidth(TextRenderer textRenderer, List<Text> lines) {
+    private static int getMaxWidth(TextRenderer textRenderer, List<? extends Text> lines) {
         int maxWidth = 0;
 
         for (Text line : lines) {

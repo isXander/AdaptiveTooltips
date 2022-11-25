@@ -40,6 +40,10 @@ dependencies {
     }
 }
 
+loom {
+    accessWidenerPath.set(file("src/main/resources/adaptivetooltips.accesswidener"))
+}
+
 tasks {
     processResources {
         val modId: String by project
