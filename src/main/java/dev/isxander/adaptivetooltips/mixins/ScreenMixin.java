@@ -53,7 +53,7 @@ public class ScreenMixin {
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, instance.toList(), x).stream();
     }
 
-    @Inject(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "renderTooltipFromComponents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V", ordinal = 0, shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void moveTooltip(MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY, CallbackInfo ci, int width, int height, int x, int y) {
         debugify$modifiedX = x;
         debugify$modifiedY = y;
