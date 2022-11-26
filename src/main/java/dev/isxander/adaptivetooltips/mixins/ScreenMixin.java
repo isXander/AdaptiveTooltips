@@ -62,7 +62,7 @@ public class ScreenMixin {
 
     @Redirect(method = "renderOrderedTooltip", at = @At(value = "INVOKE", target = "Ljava/util/List;stream()Ljava/util/stream/Stream;"))
     private Stream<? extends OrderedText> wrapOrderedText(List<? extends OrderedText> instance, MatrixStack matrices, List<? extends OrderedText> dontuse, int x, int y) {
-        if (debugify$alreadyWrapped || AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF)
+        if (debugify$alreadyWrapped || AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF) // prevent back-and-forth conversion OrderedText -> Text -> OrderedText if wrapping isn't going to run anyway
             return instance.stream();
         debugify$alreadyWrapped = false;
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, TextUtil.toText(instance), x, HoveredTooltipPositioner.INSTANCE).stream();
@@ -70,7 +70,7 @@ public class ScreenMixin {
 
     @Redirect(method = "renderPositionedTooltip", at = @At(value = "INVOKE", target = "Ljava/util/List;stream()Ljava/util/stream/Stream;"))
     private Stream<? extends OrderedText> wrapPositionedOrderedText(List<? extends OrderedText> instance, MatrixStack matrices, Screen.PositionedTooltip positionedTooltip, int x, int y) {
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF) // prevent back-and-forth conversion OrderedText -> Text -> OrderedText if wrapping isn't going to run anyway
             return instance.stream();
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, TextUtil.toText(instance), x, positionedTooltip.positioner()).stream();
     }

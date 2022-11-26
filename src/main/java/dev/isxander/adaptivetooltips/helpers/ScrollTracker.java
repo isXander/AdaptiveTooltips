@@ -52,6 +52,7 @@ public class ScrollTracker {
     public static void scroll(MatrixStack matrices, List<TooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight) {
         tick(components, x, y, width, height, screenWidth, screenHeight, MinecraftClient.getInstance().getLastFrameDuration());
 
+        // have to use a translate rather than moving the tooltip's x and y because int precision is too jittery
         matrices.translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
     }
 
@@ -60,11 +61,13 @@ public class ScrollTracker {
 
         resetIfNeeded(components);
 
+        // prevent scrolling if not needed, required for clamping to work without breaking every tooltip
         if (height < screenHeight)
             targetVerticalScroll = 0;
         if (width < screenWidth)
             targetHorizontalScroll = 0;
 
+        // prevents scrolling too far up/down
         targetVerticalScroll = MathHelper.clamp(targetVerticalScroll, Math.min(screenHeight - (y + height) - 4, 0), Math.max(-y + 4, 0));
         targetHorizontalScroll = MathHelper.clamp(targetHorizontalScroll, Math.min(screenWidth - (x + width) - 4, 0), Math.max(-x + 4, 0));
 
@@ -82,6 +85,7 @@ public class ScrollTracker {
     }
 
     private static void resetIfNeeded(List<TooltipComponent> components) {
+        // if not the same component as last frame, reset the scrolling.
         if (!isEqual(components, trackedComponents)) {
             reset();
         }
@@ -91,6 +95,7 @@ public class ScrollTracker {
 
     public static void reset() {
         targetVerticalScroll = targetHorizontalScroll = 0;
+        // need to also reset the animation as it is funky upon next render
         currentVerticalScroll = currentHorizontalScroll = 0;
     }
 

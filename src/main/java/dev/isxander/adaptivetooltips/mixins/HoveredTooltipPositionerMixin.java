@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public class HoveredTooltipPositionerMixin {
     @ModifyArg(method = "preventOverflow", at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(II)I"), index = 1)
     private int preventVanillaClamping(int max) {
+        // setting the minimum x value to be Integer.MIN_VALUE essentially preventing clamping
         return AdaptiveTooltipConfig.INSTANCE.getConfig().preventVanillaClamping ? Integer.MIN_VALUE : max;
     }
 }

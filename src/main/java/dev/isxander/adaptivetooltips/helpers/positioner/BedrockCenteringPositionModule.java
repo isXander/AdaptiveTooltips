@@ -34,6 +34,7 @@ public class BedrockCenteringPositionModule implements TooltipPositionModule {
         } else if (y + height > screenHeight + 2) {
             modY = Math.max(screenHeight - height - 4, 4);
         } else {
+            // doesn't need to be repositioned
             return Optional.empty();
         }
 

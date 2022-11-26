@@ -27,7 +27,7 @@ public class BestCornerPositionModule implements TooltipPositionModule {
             corners.put(topObstruction * leftObstruction, new Vector2i(5, 5)); // top left
             // top left must be put last to rely on that maps override identical keys so if each overlapping is less than -10 it uses top left
 
-            return Optional.of(corners.firstEntry().getValue());
+            return Optional.of(corners.firstEntry().getValue()); // treemap is sorted by key, which is obstruction amount, getting the first entry gets the least obstructive
         } else {
             return Optional.empty();
         }

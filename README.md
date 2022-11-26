@@ -92,8 +92,12 @@ decide what's best for in terms of visibility and transparency.
 
 ![Transparency Modification Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/transparency-modification.png)
 
-### TODO: YACL-style option position on/off example
-### TODO: Remove first line padding on/off example
+### YACL-style GUI Tooltips
+
+Capture the style of [YetAnotherConfigLib](https://curseforge.com/minecraft/mc-mods/yacl)'s tooltip positioning
+by placing tooltips above or below a hovered button.
+
+![YACL-style GUI Tooltips](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/yacl-style.png)
 
 ## License
 
