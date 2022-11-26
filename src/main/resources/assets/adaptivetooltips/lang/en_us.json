@@ -4,8 +4,8 @@
   "adaptivetooltips.group.content_manipulation.desc": "This group of options modifies the content of the tooltip.",
   "adaptivetooltips.opt.text_wrapping.title": "Text Wrapping",
   "adaptivetooltips.opt.text_wrapping.desc": "How Adaptive Tooltips wraps tooltip text.",
-  "adaptivetooltips.opt.prevent_vanilla_wrapping.title": "Prevent Vanilla Wrapping",
-  "adaptivetooltips.opt.prevent_vanilla_wrapping.desc": "Stop vanilla from applying text wrapping to tooltips in the GUI.",
+  "adaptivetooltips.opt.overwrite_vanilla_wrapping.title": "Overwrite Vanilla Wrapping",
+  "adaptivetooltips.opt.overwrite_vanilla_wrapping.desc": "Stop vanilla from applying its own text wrapping to tooltips in the GUI and use AdaptiveTooltip's instead.",
   "adaptivetooltips.group.positioning.title": "Positioning",
   "adaptivetooltips.group.positioning.desc": "This group of options determines where the tooltip will appear on the screen.",
   "adaptivetooltips.opt.prioritize_tooltip_top.title": "Prioritize Tooltip Top",
@@ -41,6 +41,7 @@
   "adaptivetooltips.opt.remove_first_line_padding.title": "Remove First Line Padding",
   "adaptivetooltips.opt.remove_first_line_padding.desc": "Removes the extra 2 pixels of line padding from the first line of the tooltip.",
   "adaptivetooltips.wrap_text_behaviour.off": "Off",
+  "adaptivetooltips.wrap_text_behaviour.off.desc": "Applies no wrapping to tooltips.",
   "adaptivetooltips.wrap_text_behaviour.screen_width": "Screen width",
   "adaptivetooltips.wrap_text_behaviour.screen_width.desc": "Wraps tooltips based on how wide the screen is. Designed to be paired with 'Bedrock Centering' option.",
   "adaptivetooltips.wrap_text_behaviour.remaining_width": "Remaining width",
@@ -54,5 +55,7 @@
   "adaptivetooltips.format.vanilla": "Vanilla",
   "adaptivetooltips.bind.scroll": "Enable Tooltip Scrolling",
   "adaptivetooltips.bind.horizontal_scroll": "Enable Horizontal Scrolling",
-  "adaptivetooltips.gui.awaiting_key": "Press a key"
+  "adaptivetooltips.gui.awaiting_key": "Press a key",
+  "adaptivetooltips.gui.require_opt.on": "Requires '%s' to be enabled.",
+  "adaptivetooltips.gui.require_opt.off": "Requires '%s' to be disabled."
 }

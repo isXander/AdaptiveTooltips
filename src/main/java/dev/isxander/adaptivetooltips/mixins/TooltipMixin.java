@@ -17,7 +17,7 @@ import java.util.List;
 public class TooltipMixin {
     @WrapOperation(method = "wrapLines", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;wrapLines(Lnet/minecraft/text/StringVisitable;I)Ljava/util/List;"))
     private static List<OrderedText> preventWrapping(TextRenderer instance, StringVisitable text, int width, Operation<List<OrderedText>> operation) {
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().preventVanillaWrapping)
+        if (AdaptiveTooltipConfig.INSTANCE.getConfig().overwriteVanillaWrapping)
             return List.of(Language.getInstance().reorder(text));
         return operation.call(instance, text, width);
     }

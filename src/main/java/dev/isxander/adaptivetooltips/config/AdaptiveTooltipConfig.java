@@ -22,7 +22,7 @@ public class AdaptiveTooltipConfig {
     public static final GsonConfigInstance<AdaptiveTooltipConfig> INSTANCE = new GsonConfigInstance<>(AdaptiveTooltipConfig.class, FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"), GsonBuilder::setPrettyPrinting);
 
     @ConfigEntry public WrapTextBehaviour wrapText = WrapTextBehaviour.SCREEN_WIDTH;
-    @ConfigEntry public boolean preventVanillaWrapping = false;
+    @ConfigEntry public boolean overwriteVanillaWrapping = false;
     @ConfigEntry public boolean prioritizeTooltipTop = true;
     @ConfigEntry public boolean bedrockCentering = true;
     @ConfigEntry public boolean bestCorner = false;
@@ -63,12 +63,12 @@ public class AdaptiveTooltipConfig {
                 .controller(EnumController::new)
                 .build();
         var preventVanillaWrappingOpt = Option.createBuilder(boolean.class)
-                .name(Text.translatable("adaptivetooltips.opt.prevent_vanilla_wrapping.title"))
-                .tooltip(Text.translatable("adaptivetooltips.opt.prevent_vanilla_wrapping.desc"))
+                .name(Text.translatable("adaptivetooltips.opt.overwrite_vanilla_wrapping.title"))
+                .tooltip(Text.translatable("adaptivetooltips.opt.overwrite_vanilla_wrapping.desc"))
                 .binding(
-                        INSTANCE.getDefaults().preventVanillaWrapping,
-                        () -> INSTANCE.getConfig().preventVanillaWrapping,
-                        val -> INSTANCE.getConfig().preventVanillaWrapping = val
+                        INSTANCE.getDefaults().overwriteVanillaWrapping,
+                        () -> INSTANCE.getConfig().overwriteVanillaWrapping,
+                        val -> INSTANCE.getConfig().overwriteVanillaWrapping = val
                 )
                 .controller(TickBoxController::new)
                 .build();
@@ -92,6 +92,7 @@ public class AdaptiveTooltipConfig {
         var bedrockCenteringOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.bedrock_centering.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.bedrock_centering.desc"))
+                .tooltip(Text.translatable("adaptivetooltips.gui.require_opt.on", Text.translatable("adaptivetooltips.opt.prevent_vanilla_clamping.title")).formatted(Formatting.RED))
                 .binding(
                         INSTANCE.getDefaults().bedrockCentering,
                         () -> INSTANCE.getConfig().bedrockCentering,
@@ -102,6 +103,7 @@ public class AdaptiveTooltipConfig {
         var alwaysAlignToCornerOpt = Option.createBuilder(boolean.class)
                 .name(Text.translatable("adaptivetooltips.opt.always_align_corner.title"))
                 .tooltip(Text.translatable("adaptivetooltips.opt.always_align_corner.desc"))
+                .tooltip(Text.translatable("adaptivetooltips.gui.require_opt.on", Text.translatable("adaptivetooltips.opt.align_to_corner.title")).formatted(Formatting.RED))
                 .binding(
                         INSTANCE.getDefaults().alwaysBestCorner,
                         () -> INSTANCE.getConfig().alwaysBestCorner,

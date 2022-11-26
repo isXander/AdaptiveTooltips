@@ -71,7 +71,7 @@ public class ScreenMixin {
 
     @Redirect(method = "renderPositionedTooltip", at = @At(value = "INVOKE", target = "Ljava/util/List;stream()Ljava/util/stream/Stream;"))
     private Stream<? extends OrderedText> wrapPositionedOrderedText(List<? extends OrderedText> instance, MatrixStack matrices, Screen.PositionedTooltip positionedTooltip, int x, int y) {
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF) // prevent back-and-forth conversion OrderedText -> Text -> OrderedText if wrapping isn't going to run anyway
+        if (!AdaptiveTooltipConfig.INSTANCE.getConfig().overwriteVanillaWrapping || AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF) // prevent back-and-forth conversion OrderedText -> Text -> OrderedText if wrapping isn't going to run anyway
             return instance.stream();
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, TextUtil.toText(instance), x, positionedTooltip.positioner()).stream();
     }
