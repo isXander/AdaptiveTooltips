@@ -7,8 +7,8 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.text.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TooltipWrapper {
@@ -37,6 +37,40 @@ public class TooltipWrapper {
             }
             case HALF_SCREEN_WIDTH ->
                 allowedMaxWidth = screen.width / 2;
+            case SMART -> {
+                if (lines.size() <= 1) { // calculating diffs only works with 2 or more
+                    allowedMaxWidth = Integer.MAX_VALUE;
+                } else {
+                    AtomicInteger idx = new AtomicInteger();
+                    // map each line to its width and group it with its index for later use
+                    Map<Integer, Integer> widths = lines.stream()
+                            .map(textRenderer::getWidth)
+                            .map(width -> new AbstractMap.SimpleEntry<>(idx.getAndIncrement(), width))
+                            .filter(entry -> entry.getValue() > 0)
+                            .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+
+                    // get the difference between each value, retaining the index
+                    List<Map.Entry<Integer, Integer>> diffs = new ArrayList<>();
+                    Iterator<Map.Entry<Integer, Integer>> iterator = widths.entrySet().iterator();
+                    int width = iterator.next().getValue();
+                    while (iterator.hasNext()) {
+                        Map.Entry<Integer, Integer> entry = iterator.next();
+                        int diff = entry.getValue() - width;
+                        width = entry.getValue();
+                        diffs.add(new AbstractMap.SimpleEntry<>(entry.getKey(), diff));
+                    }
+
+                    // find the largest increase below 100px then get the index
+                    Optional<Integer> index = diffs.stream()
+                            .filter(entry -> entry.getValue() <= 100)
+                            .sorted(Comparator.comparingInt(entry -> -entry.getValue()))
+                            .map(Map.Entry::getKey)
+                            .findFirst();
+
+                    // if no matches, just wrap half of 3/4 screen width
+                    allowedMaxWidth = index.map(integer -> textRenderer.getWidth(lines.get(integer))).orElse(screen.width / 4 * 3);
+                }
+            }
         }
 
         // if max width is less than allowed max width, there is no need to do any wrapping
