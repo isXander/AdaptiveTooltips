@@ -49,6 +49,8 @@
   "adaptivetooltips.wrap_text_behaviour.remaining_width.warning": "仅适用于悬停工具提示定位！有关更多详细信息，请参见“仅重新定位悬停工具提示”的描述。",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width": "半屏幕宽度",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width.desc": "工具提示的最大宽度为屏幕宽度的一半，因此工具提示最多只能水平填充屏幕的一半。",
+  "adaptivetooltips.wrap_text_behaviour.smart": "智能",
+  "adaptivetooltips.wrap_text_behaviour.smart.desc": "当AT检测到一行宽度超过100像素时，它会选择下一个最大宽度作为工具提示的最大宽度。若未找到匹配项，则将换行至屏幕宽度的四分之三。",  
   "adaptivetooltips.scroll_direction.reverse": "反转（Windows）",
   "adaptivetooltips.scroll_direction.natural": "自然（macOS）",
   "adaptivetooltips.format.pixels": "%s 像素",
