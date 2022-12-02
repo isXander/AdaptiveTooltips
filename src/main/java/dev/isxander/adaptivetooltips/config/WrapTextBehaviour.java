@@ -7,7 +7,8 @@ public enum WrapTextBehaviour implements NameableEnum {
     OFF,
     SCREEN_WIDTH,
     REMAINING_WIDTH,
-    HALF_SCREEN_WIDTH;
+    HALF_SCREEN_WIDTH,
+    SMART;
 
     @Override
     public Text getDisplayName() {
