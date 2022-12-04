@@ -46,6 +46,7 @@ There are multiple methods of wrapping:
 - `Remaining Width` - Allows tooltip lines to fill a maximum of what's left until the tooltip reaches the end of the 
   screen, picking either the left or the right depending on which would require less wrapping.
 - `Half Screen Width` - Only allows tooltips to have a width of half of the screen.
+- `Smart` - Wraps lines that are considerably longer than the others, with a hard limit of 3/4 of the screen width.
 
 ![Remaining Width Wrapping On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/remaining-width-wrapping.png)
 *screenshot is using `Remaining Width` wrapping method*

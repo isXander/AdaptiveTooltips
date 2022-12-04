@@ -93,7 +93,8 @@ java {
     withSourcesJar()   
 }
 
-val changelogText = file("changelogs/${project.version}.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
+var changelogText = file("changelogs/${project.version}.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
+file("changelogs/header.md").takeIf { it.exists() }?.readText()?.let { changelogText = it + "\n\n" + changelogText }
 
 val modrinthId: String by project
 if (modrinthId.isNotEmpty()) {
@@ -103,7 +104,7 @@ if (modrinthId.isNotEmpty()) {
         versionNumber.set("${project.version}")
         versionType.set("release")
         uploadFile.set(tasks["remapJar"])
-        gameVersions.set(listOf("1.19", "1.19.1", "1.19.2"))
+        gameVersions.set(listOf("1.19.3"))
         loaders.set(listOf("fabric", "quilt"))
         changelog.set(changelogText)
         syncBodyFrom.set(file("README.md").readText())
@@ -121,9 +122,7 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
 
             id = curseforgeId
             releaseType = "release"
-            addGameVersion("1.19")
-            addGameVersion("1.19.1")
-            addGameVersion("1.19.2")
+            addGameVersion("1.19.3")
             addGameVersion("Fabric")
             addGameVersion("Java 17")
 
@@ -145,7 +144,7 @@ githubRelease {
     owner(split[0])
     repo(split[1])
     tagName("${project.version}")
-    targetCommitish("1.19")
+    targetCommitish("1.19.3")
     body(changelogText)
     releaseAssets(tasks["remapJar"].outputs.files)
 }
@@ -154,7 +153,7 @@ publishing {
     publications {
         create<MavenPublication>("mod") {
             groupId = "dev.isxander"
-            artifactId = base.archivesName.get()
+            artifactId = "adaptive-tooltips"
 
             from(components["java"])
         }

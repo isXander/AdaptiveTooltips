@@ -39,7 +39,7 @@ public class TooltipWrapper {
                 allowedMaxWidth = screen.width / 2;
             case SMART -> {
                 if (lines.size() <= 1) { // calculating diffs only works with 2 or more
-                    allowedMaxWidth = Integer.MAX_VALUE;
+                    allowedMaxWidth = screen.width / 4 * 3;
                 } else {
                     AtomicInteger idx = new AtomicInteger();
                     // map each line to its width and group it with its index for later use
@@ -68,7 +68,7 @@ public class TooltipWrapper {
                             .findFirst();
 
                     // if no matches, just wrap half of 3/4 screen width
-                    allowedMaxWidth = index.map(integer -> textRenderer.getWidth(lines.get(integer))).orElse(screen.width / 4 * 3);
+                    allowedMaxWidth = index.map(integer -> Math.min(textRenderer.getWidth(lines.get(integer)), screen.width / 4 * 3)).orElse(screen.width / 4 * 3);
                 }
             }
         }

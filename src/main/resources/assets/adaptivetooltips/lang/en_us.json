@@ -50,7 +50,7 @@
   "adaptivetooltips.wrap_text_behaviour.half_screen_width": "Half screen width",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width.desc": "Wraps tooltips with the max width of half of the screen width, so tooltips can at most, only fill half of your screen horizontally.",
   "adaptivetooltips.wrap_text_behaviour.smart": "Smart",
-  "adaptivetooltips.wrap_text_behaviour.smart.desc": "When AT detects a line width increase of over 100 pixels, it picks the next largest as the maximum width for tooltips. If no matches are found, wrap it to 3 quarters of the screen width.",
+  "adaptivetooltips.wrap_text_behaviour.smart.desc": "Wraps lines that are considerably longer than the others, with a hard limit of 3/4 of the screen width.",
   "adaptivetooltips.scroll_direction.reverse": "Reverse (Windows)",
   "adaptivetooltips.scroll_direction.natural": "Natural (macOS)",
   "adaptivetooltips.format.pixels": "%s pixels",
