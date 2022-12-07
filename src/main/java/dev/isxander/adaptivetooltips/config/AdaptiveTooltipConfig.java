@@ -37,14 +37,14 @@ public class AdaptiveTooltipConfig {
     @ConfigEntry public int verticalScrollSensitivity = 10;
     @ConfigEntry public int horizontalScrollSensitivity = 10;
     @ConfigEntry public float tooltipTransparency = 1f;
-    @ConfigEntry public boolean removeFirstLinePadding = false;
+    @ConfigEntry public boolean removeFirstLinePadding = true;
 
     public static Screen makeScreen(Screen parent) {
         return YetAnotherConfigLib.create(INSTANCE, (defaults, config, builder) -> {
-            ConfigCategory.Builder categoryBuilder = ConfigCategory.createBuilder()
+            var categoryBuilder = ConfigCategory.createBuilder()
                     .name(Text.translatable("adaptivetooltips.title"));
 
-            OptionGroup.Builder contentManipulationGroup = OptionGroup.createBuilder()
+            var contentManipulationGroup = OptionGroup.createBuilder()
                     .name(Text.translatable("adaptivetooltips.group.content_manipulation.title"))
                     .tooltip(Text.translatable("adaptivetooltips.group.content_manipulation.desc"));
             var textWrappingOpt = Option.createBuilder(WrapTextBehaviour.class)
@@ -77,7 +77,7 @@ public class AdaptiveTooltipConfig {
             contentManipulationGroup.option(preventVanillaWrappingOpt);
             categoryBuilder.group(contentManipulationGroup.build());
 
-            OptionGroup.Builder positioningGroup = OptionGroup.createBuilder()
+            var positioningGroup = OptionGroup.createBuilder()
                     .name(Text.translatable("adaptivetooltips.group.positioning.title"))
                     .tooltip(Text.translatable("adaptivetooltips.group.positioning.desc"));
             var prioritizeTooltipTopOpt = Option.createBuilder(boolean.class)
@@ -178,7 +178,7 @@ public class AdaptiveTooltipConfig {
             positioningGroup.option(useYACLTooltipPositionerOpt);
             categoryBuilder.group(positioningGroup.build());
 
-            OptionGroup.Builder scrollingGroup = OptionGroup.createBuilder()
+            var scrollingGroup = OptionGroup.createBuilder()
                     .name(Text.translatable("adaptivetooltips.group.scrolling.title"))
                     .tooltip(Text.translatable("adaptivetooltips.group.scrolling.desc"));
             var scrollingInstructions = Option.createBuilder(Text.class)
@@ -252,7 +252,7 @@ public class AdaptiveTooltipConfig {
             scrollingGroup.option(horizontalScrollSensOpt);
             categoryBuilder.group(scrollingGroup.build());
 
-            OptionGroup.Builder styleGroup = OptionGroup.createBuilder()
+            var styleGroup = OptionGroup.createBuilder()
                     .name(Text.translatable("adaptivetooltips.group.style.title"))
                     .tooltip(Text.translatable("adaptivetooltips.group.style.desc"));
             var tooltipTransparencyOpt = Option.createBuilder(float.class)

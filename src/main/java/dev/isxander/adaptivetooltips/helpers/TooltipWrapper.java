@@ -41,7 +41,7 @@ public class TooltipWrapper {
                 if (lines.size() <= 1) { // calculating diffs only works with 2 or more
                     allowedMaxWidth = screen.width / 4 * 3;
                 } else {
-                    AtomicInteger idx = new AtomicInteger();
+                    AtomicInteger idx = new AtomicInteger(0);
                     // map each line to its width and group it with its index for later use
                     Map<Integer, Integer> widths = lines.stream()
                             .map(textRenderer::getWidth)
