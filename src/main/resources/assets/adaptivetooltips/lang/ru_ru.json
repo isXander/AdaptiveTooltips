@@ -49,6 +49,8 @@
   "adaptivetooltips.wrap_text_behaviour.remaining_width.warning": "Работает только с подсказками по наведению курсора! Подробнее читайте в описании настройки \"Изменять только подсказки по наведению\".",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width": "Половинная ширина",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width.desc": "Установить лимит ширины посказки в половину ширины экрана, чтобы подсказка не заполняла весь экран по горизонтали.",
+  "adaptivetooltips.wrap_text_behaviour.smart": "Умный",
+  "adaptivetooltips.wrap_text_behaviour.smart.desc": "Переносить особо выделяющиеся строки с лимитом ширины подсказки в 3/4 экрана.",
   "adaptivetooltips.scroll_direction.reverse": "Обратное (Windows)",
   "adaptivetooltips.scroll_direction.natural": "Обычное (macOS)",
   "adaptivetooltips.format.pixels": "%s пикселей",
