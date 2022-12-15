@@ -8,11 +8,11 @@ github_release = "2.+"
 machete = "1.+"
 
 minecraft = "1.19.3"
-yarn = "1"
+yarn = "3"
 fabric_loader = "0.14.11"
-fabric_api = "0.68.1+1.19.3"
-yacl = "2.0.0"
-mod_menu = "5.0.0-alpha.4"
+fabric_api = "0.69.1+1.19.3"
+yacl = "2.1.1"
+mod_menu = "5.0.0"
 mixin_extras = "0.1.1"
 
 [libraries]
