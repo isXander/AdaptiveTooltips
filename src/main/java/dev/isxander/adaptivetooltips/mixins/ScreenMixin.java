@@ -61,6 +61,12 @@ public class ScreenMixin {
         return TooltipWrapper.wrapTooltipLines((Screen) (Object) this, textRenderer, instance.toList(), x, HoveredTooltipPositioner.INSTANCE).stream();
     }
 
+    /**
+     * Wraps an {@link OrderedText}.
+     *
+     * Wrapping an {@link OrderedText} is a lot more expensive than wrapping a {@link Text} object,
+     * so we want to avoid doing it if possible. Hence the variable.
+     */
     @Redirect(method = "renderOrderedTooltip", at = @At(value = "INVOKE", target = "Ljava/util/List;stream()Ljava/util/stream/Stream;"))
     private Stream<? extends OrderedText> wrapOrderedText(List<? extends OrderedText> instance, MatrixStack matrices, List<? extends OrderedText> dontuse, int x, int y) {
         if (debugify$alreadyWrapped || AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText == WrapTextBehaviour.OFF) // prevent back-and-forth conversion OrderedText -> Text -> OrderedText if wrapping isn't going to run anyway
