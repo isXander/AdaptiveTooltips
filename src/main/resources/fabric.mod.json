@@ -31,8 +31,8 @@
   ],
   "accessWidener": "adaptivetooltips.accesswidener",
   "depends": {
-    "fabricloader": ">=0.14.11",
-    "minecraft": "~1.19.3-rc.1",
+    "fabricloader": ">=0.14.17",
+    "minecraft": "~1.19.4-rc.1",
     "java": ">=17",
     "fabric": "*",
     "yet-another-config-lib": "2.x.x"
