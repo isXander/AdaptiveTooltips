@@ -35,7 +35,7 @@
     "minecraft": "~1.19.4-rc.1",
     "java": ">=17",
     "fabric": "*",
-    "yet-another-config-lib": "2.x.x"
+    "yet-another-config-lib": ">=2.3.0"
   },
   "breaks": {
     "tooltipfix": "*"
