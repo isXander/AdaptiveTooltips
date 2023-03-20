@@ -108,6 +108,11 @@ if (modrinthId.isNotEmpty()) {
         loaders.set(listOf("fabric", "quilt"))
         changelog.set(changelogText)
         syncBodyFrom.set(file("README.md").readText())
+        dependencies {
+            required.project("fabric-api")
+            required.project("yacl")
+            optional.project("modmenu")
+        }
     }
 }
 
@@ -125,6 +130,12 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
             addGameVersion("1.19.3")
             addGameVersion("Fabric")
             addGameVersion("Java 17")
+
+            relations(closureOf<me.hypherionmc.cursegradle.CurseRelation> {
+                requiredDependency("fabric-api")
+                requiredDependency("yacl")
+                optionalDependency("modmenu")
+            })
 
             changelog = changelogText
             changelogType = "markdown"
