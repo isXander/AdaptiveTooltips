@@ -86,6 +86,9 @@ public class ScreenMixin {
     private Vector2ic moveTooltip(TooltipPositioner clientTooltipPositioner, Screen screen, int x, int y, int width, int height, Operation<Vector2ic> operation, MatrixStack matrices, List<TooltipComponent> components, int mouseX, int mouseY) {
         Vector2ic currentPosition = operation.call(clientTooltipPositioner, screen, x, y, width, height);
 
+        // push before returning so we don't need to repeat the check on pop
+        matrices.push(); // injection is before matrices.push()
+
         if (!(clientTooltipPositioner instanceof HoveredTooltipPositioner) && AdaptiveTooltipConfig.INSTANCE.getConfig().onlyRepositionHoverTooltips)
             return currentPosition;
 
@@ -99,7 +102,6 @@ public class ScreenMixin {
                 currentPosition = position.get();
         }
 
-        matrices.push(); // injection is before matrices.push()
         ScrollTracker.scroll(matrices, components, currentPosition.x(), currentPosition.y(), width, height, this.width, this.height);
 
         return currentPosition;

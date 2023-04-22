@@ -23,8 +23,8 @@ public class YACLTooltipPositioner implements TooltipPositioner {
         int maxBelow = screen.height - (belowY + height);
         int minAbove = aboveY - height;
 
-        int yResult = belowY;
-        if (maxBelow < -8)
+        int yResult = aboveY;
+        if (minAbove < 8)
             yResult = maxBelow > minAbove ? belowY : aboveY;
 
         int xResult = MathHelper.clamp(centerX - width / 2, -4, screen.width - width - 4);
