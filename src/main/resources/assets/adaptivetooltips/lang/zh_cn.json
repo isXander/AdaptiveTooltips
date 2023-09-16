@@ -50,7 +50,7 @@
   "adaptivetooltips.wrap_text_behaviour.half_screen_width": "半屏宽度",
   "adaptivetooltips.wrap_text_behaviour.half_screen_width.desc": "提示框的最大宽度为屏幕宽度的一半，因此提示框最多只能水平占满屏幕的一半。",
   "adaptivetooltips.wrap_text_behaviour.smart": "智能",
-  "adaptivetooltips.wrap_text_behaviour.smart.desc": "为过长的行换行，硬限制为屏幕宽度的3/4。",
+  "adaptivetooltips.wrap_text_behaviour.smart.desc": "为比其他长得多的行换行，硬限制为屏幕宽度的3/4。",
   "adaptivetooltips.scroll_direction.reverse": "反转 (Windows)",
   "adaptivetooltips.scroll_direction.natural": "自然 (macOS)",
   "adaptivetooltips.format.pixels": "%s像素",
