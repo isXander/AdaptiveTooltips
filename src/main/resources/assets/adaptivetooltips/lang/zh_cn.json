@@ -8,7 +8,7 @@
   "adaptivetooltips.opt.overwrite_vanilla_wrapping.desc": "停止原版对GUI中的提示框应用其文本换行，转而使用此模组的文本换行。",
   "adaptivetooltips.group.positioning.title": "定位",
   "adaptivetooltips.group.positioning.desc": "这组选项决定了提示框在屏幕上显示的位置。",
-  "adaptivetooltips.opt.prioritize_tooltip_top.title": "优先置顶提示框",
+  "adaptivetooltips.opt.prioritize_tooltip_top.title": "顶部优先",
   "adaptivetooltips.opt.prioritize_tooltip_top.desc": "当提示框高于屏幕时，Minecraft默认会优先将底部贴合屏幕，截断顶部。此选项将其改为顶部，截断底部。",
   "adaptivetooltips.opt.prioritize_tooltip_top.warn.align_to_corner": "防止对 %s 进行垂直检查，因为提示框从未高于屏幕。",
   "adaptivetooltips.opt.bedrock_centering.title": "基岩版居中",
