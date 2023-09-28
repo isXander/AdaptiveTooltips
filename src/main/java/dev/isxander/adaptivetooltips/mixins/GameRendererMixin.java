@@ -1,7 +1,7 @@
 package dev.isxander.adaptivetooltips.mixins;
 
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

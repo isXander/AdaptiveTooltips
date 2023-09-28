@@ -3,17 +3,17 @@ package dev.isxander.adaptivetooltips.mixins;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.helpers.YACLTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(ClickableWidget.class)
+@Mixin(AbstractWidget.class)
 public class ClickableWidgetMixin {
-    @ModifyReturnValue(method = "getTooltipPositioner", at = @At("RETURN"))
-    private TooltipPositioner changePositioner(TooltipPositioner tooltipPositioner) {
-        if (AdaptiveTooltipConfig.INSTANCE.getConfig().useYACLTooltipPositioner)
-            return new YACLTooltipPositioner((ClickableWidget) (Object) this);
+    @ModifyReturnValue(method = "createTooltipPositioner", at = @At("RETURN"))
+    private ClientTooltipPositioner changePositioner(ClientTooltipPositioner tooltipPositioner) {
+        if (AdaptiveTooltipConfig.HANDLER.instance().useYACLTooltipPositioner)
+            return new YACLTooltipPositioner((AbstractWidget) (Object) this);
         return tooltipPositioner;
     }
 }

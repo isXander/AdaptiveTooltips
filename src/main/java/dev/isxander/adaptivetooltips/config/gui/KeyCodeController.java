@@ -1,29 +1,28 @@
 package dev.isxander.adaptivetooltips.config.gui;
 
-import dev.isxander.yacl.api.Controller;
-import dev.isxander.yacl.api.Option;
-import dev.isxander.yacl.api.utils.Dimension;
-import dev.isxander.yacl.gui.AbstractWidget;
-import dev.isxander.yacl.gui.YACLScreen;
-import dev.isxander.yacl.gui.controllers.ControllerWidget;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
-import java.util.function.Function;
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.isxander.yacl3.api.Controller;
+import dev.isxander.yacl3.api.Option;
+import dev.isxander.yacl3.api.controller.ValueFormatter;
+import dev.isxander.yacl3.api.utils.Dimension;
+import dev.isxander.yacl3.gui.AbstractWidget;
+import dev.isxander.yacl3.gui.YACLScreen;
+import dev.isxander.yacl3.gui.controllers.ControllerWidget;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class KeyCodeController implements Controller<Integer> {
-    public static final Function<Integer, Text> DEFAULT_FORMATTER = code -> InputUtil.Type.KEYSYM.createFromCode(code).getLocalizedText();
+    public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYSYM.getOrCreate(code).getDisplayName();
 
     private final Option<Integer> option;
-    private final Function<Integer, Text> valueFormatter;
+    private final ValueFormatter<Integer> valueFormatter;
 
     public KeyCodeController(Option<Integer> option) {
         this(option, DEFAULT_FORMATTER);
     }
 
-    public KeyCodeController(Option<Integer> option, Function<Integer, Text> valueFormatter) {
+    public KeyCodeController(Option<Integer> option, ValueFormatter<Integer> valueFormatter) {
         this.option = option;
         this.valueFormatter = valueFormatter;
     }
@@ -34,8 +33,8 @@ public class KeyCodeController implements Controller<Integer> {
     }
 
     @Override
-    public Text formatValue() {
-        return valueFormatter.apply(option().pendingValue());
+    public Component formatValue() {
+        return valueFormatter.format(option().pendingValue());
     }
 
     @Override
@@ -51,11 +50,6 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        protected void drawHoveredControl(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-
-        }
-
-        @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (!isMouseOver(mouseX, mouseY) || !isAvailable()) {
                 return false;
@@ -66,9 +60,9 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        protected Text getValueText() {
+        protected Component getValueText() {
             if (awaitingKeyPress)
-                return Text.translatable("adaptivetooltips.gui.awaiting_key").formatted(Formatting.ITALIC);
+                return Component.translatable("adaptivetooltips.gui.awaiting_key").withStyle(ChatFormatting.ITALIC);
 
             return super.getValueText();
         }

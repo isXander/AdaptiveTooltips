@@ -1,7 +1,7 @@
 package dev.isxander.adaptivetooltips.config;
 
-import dev.isxander.yacl.api.NameableEnum;
-import net.minecraft.text.Text;
+import dev.isxander.yacl3.api.NameableEnum;
+import net.minecraft.network.chat.Component;
 
 public enum WrapTextBehaviour implements NameableEnum {
     OFF,
@@ -11,12 +11,12 @@ public enum WrapTextBehaviour implements NameableEnum {
     SMART;
 
     @Override
-    public Text getDisplayName() {
-        return Text.translatable(getTranslationKey());
+    public Component getDisplayName() {
+        return Component.translatable(getTranslationKey());
     }
 
-    public Text getTooltip() {
-        return Text.translatable(getTranslationKey() + ".desc");
+    public Component getTooltip() {
+        return Component.translatable(getTranslationKey() + ".desc");
     }
 
     private String getTranslationKey() {

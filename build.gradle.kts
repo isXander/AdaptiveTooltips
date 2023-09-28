@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "dev.isxander"
-version = "1.1.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -20,13 +20,18 @@ repositories {
     maven("https://maven.isxander.dev/snapshots")
     maven("https://maven.terraformersmc.com/releases")
     maven("https://jitpack.io")
+    maven("https://maven.quiltmc.org/repository/release")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings("net.fabricmc:yarn:$minecraftVersion+build.${libs.versions.yarn.get()}:v2")
+    mappings(loom.layered {
+        mappings("org.quiltmc:quilt-mappings:$minecraftVersion+build.${libs.versions.quilt.mappings.get()}:intermediary-v2")
+        officialMojangMappings()
+    })
     modImplementation(libs.fabric.loader)
 
     modImplementation(libs.fabric.api)
@@ -38,10 +43,6 @@ dependencies {
         annotationProcessor(it)
         include(it)
     }
-}
-
-loom {
-    accessWidenerPath.set(file("src/main/resources/adaptivetooltips.accesswidener"))
 }
 
 tasks {
@@ -58,7 +59,7 @@ tasks {
         inputs.property("version", project.version)
         inputs.property("github", githubProject)
 
-        filesMatching(listOf("fabric.mod.json", "quilt.mod.json")) {
+        filesMatching("fabric.mod.json") {
             expand(
                 "id" to modId,
                 "group" to project.group,
@@ -104,7 +105,7 @@ if (modrinthId.isNotEmpty()) {
         versionNumber.set("${project.version}")
         versionType.set("release")
         uploadFile.set(tasks["remapJar"])
-        gameVersions.set(listOf("1.19.3"))
+        gameVersions.set(listOf("1.20.1", "1.20.2"))
         loaders.set(listOf("fabric", "quilt"))
         changelog.set(changelogText)
         syncBodyFrom.set(file("README.md").readText())
@@ -122,8 +123,10 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
 
             id = curseforgeId
             releaseType = "release"
-            addGameVersion("1.19.3")
+            addGameVersion("1.20.1")
+            addGameVersion("1.20.2")
             addGameVersion("Fabric")
+            addGameVersion("Quilt")
             addGameVersion("Java 17")
 
             changelog = changelogText
@@ -144,7 +147,7 @@ githubRelease {
     owner(split[0])
     repo(split[1])
     tagName("${project.version}")
-    targetCommitish("1.19.3")
+    targetCommitish("1.20.x/dev")
     body(changelogText)
     releaseAssets(tasks["remapJar"].outputs.files)
 }

@@ -1,32 +1,36 @@
 package dev.isxander.adaptivetooltips.utils;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TextUtil {
-    public static MutableText toText(OrderedText orderedText) {
-        MutableText text = Text.empty();
+    public static MutableComponent toText(FormattedCharSequence charSequence) {
+        MutableComponent text = Component.empty();
 
-        // constructs a Text by iterating over each character in OrderedText and appending it with its own style
-        orderedText.accept((idx, style, codePoint) -> {
-            text.append(Text.literal(Character.toString(codePoint)).setStyle(style));
+        StringBuilder builder = new StringBuilder();
+        final Style[] prevStyle = {Style.EMPTY};
+        charSequence.accept((idx, style, codePoint) -> {
+            if (!style.equals(prevStyle[0])) {
+                if (!builder.isEmpty()) {
+                    text.append(Component.literal(builder.toString()).setStyle(prevStyle[0]));
+                    builder.setLength(0);
+                }
+                prevStyle[0] = style;
+            }
+            builder.appendCodePoint(codePoint);
+
             return true;
         });
+        if (!builder.isEmpty()) {
+            text.append(Component.literal(builder.toString()).setStyle(prevStyle[0]));
+        }
 
         return text;
     }
 
-    public static List<MutableText> toText(Iterable<? extends OrderedText> orderedTextList) {
-        List<MutableText> texts = new ArrayList<>();
-
-        for (OrderedText orderedText : orderedTextList) {
-            texts.add(toText(orderedText));
-        }
-
-        return texts;
-    }
 }

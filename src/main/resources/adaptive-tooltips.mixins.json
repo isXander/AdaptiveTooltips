@@ -6,11 +6,12 @@
   "client": [
     "BundleTooltipComponentAccessor",
     "ClickableWidgetMixin",
+    "ClientTextTooltipAccessor",
     "GameRendererMixin",
+    "GuiGraphicsMixin",
     "HoveredTooltipPositionerMixin",
     "MouseMixin",
-    "OrderedTextTooltipComponentAccessor",
-    "ScreenMixin",
-    "TooltipMixin"
+    "TooltipMixin",
+    "TooltipRenderUtilMixin"
   ]
 }

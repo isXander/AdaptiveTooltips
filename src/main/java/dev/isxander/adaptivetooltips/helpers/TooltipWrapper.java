@@ -1,50 +1,51 @@
 package dev.isxander.adaptivetooltips.helpers;
 
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.text.*;
+import dev.isxander.adaptivetooltips.mixins.ClientTextTooltipAccessor;
+import dev.isxander.adaptivetooltips.utils.TextUtil;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.tooltip.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TooltipWrapper {
-    public static List<OrderedText> wrapTooltipLines(Screen screen, TextRenderer textRenderer, List<? extends Text> lines, int x, TooltipPositioner tooltipPositioner) {
+    public static List<FormattedCharSequence> wrapTooltipLines(int screenWidth, int screenHeight, Font textRenderer, List<? extends Component> lines, int x, ClientTooltipPositioner tooltipPositioner) {
         if (lines.stream().allMatch(text -> text.getString().isBlank()))
             return List.of();
         int maxWidth = getMaxWidth(textRenderer, lines);
 
         int allowedMaxWidth = 0;
-        switch (AdaptiveTooltipConfig.INSTANCE.getConfig().wrapText) {
+        switch (AdaptiveTooltipConfig.HANDLER.instance().wrapText) {
             case OFF ->
                     allowedMaxWidth = Integer.MAX_VALUE; // max_value essentially bypasses wrapping using the check below
             case SCREEN_WIDTH ->
-                    allowedMaxWidth = screen.width - 15; // minus 15 to add a bit of padding to each side
+                    allowedMaxWidth = screenWidth - 15; // minus 15 to add a bit of padding to each side
             case REMAINING_WIDTH -> {
                 // can't rely on tooltip x as wrapping is calculated *before* tooltip positioners
                 // any we can't use tooltip positioners early without height, which you get by wrapping! infinite loop!
-                if (tooltipPositioner instanceof HoveredTooltipPositioner) {
-                    allowedMaxWidth = screen.width - x - 15;
+                if (tooltipPositioner instanceof DefaultTooltipPositioner) {
+                    allowedMaxWidth = screenWidth - x - 15;
 
-                    if (x + 12 + maxWidth > screen.width)
+                    if (x + 12 + maxWidth > screenWidth)
                         allowedMaxWidth = Math.max(allowedMaxWidth, x - 20);
                 } else {
                     allowedMaxWidth = Integer.MAX_VALUE; // max_value essentially bypasses wrapping using the check below
                 }
             }
             case HALF_SCREEN_WIDTH ->
-                allowedMaxWidth = screen.width / 2;
+                allowedMaxWidth = screenWidth / 2;
             case SMART -> {
                 if (lines.size() <= 1) { // calculating diffs only works with 2 or more
-                    allowedMaxWidth = screen.width / 4 * 3;
+                    allowedMaxWidth = screenWidth / 4 * 3;
                 } else {
                     AtomicInteger idx = new AtomicInteger(0);
                     // map each line to its width and group it with its index for later use
                     Map<Integer, Integer> widths = lines.stream()
-                            .map(textRenderer::getWidth)
+                            .map(textRenderer::width)
                             .map(width -> new AbstractMap.SimpleEntry<>(idx.getAndIncrement(), width))
                             .filter(entry -> entry.getValue() > 0)
                             .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
@@ -68,28 +69,60 @@ public class TooltipWrapper {
                             .findFirst();
 
                     // if no matches, just wrap half of 3/4 screen width
-                    allowedMaxWidth = index.map(integer -> Math.min(textRenderer.getWidth(lines.get(integer)), screen.width / 4 * 3)).orElse(screen.width / 4 * 3);
+                    allowedMaxWidth = index.map(integer -> Math.min(textRenderer.width(lines.get(integer)), screenWidth / 4 * 3)).orElse(screenWidth / 4 * 3);
                 }
             }
         }
 
         // if max width is less than allowed max width, there is no need to do any wrapping
         if (maxWidth <= allowedMaxWidth)
-            return lines.stream().map(Text::asOrderedText).collect(Collectors.toList());
+            return lines.stream().map(Component::getVisualOrderText).collect(Collectors.toList());
 
-        List<OrderedText> wrapped = new ArrayList<>();
-        for (Text line : lines) {
-            wrapped.addAll(textRenderer.wrapLines(line, allowedMaxWidth));
+        List<FormattedCharSequence> wrapped = new ArrayList<>();
+        for (Component line : lines) {
+            wrapped.addAll(textRenderer.split(line, allowedMaxWidth));
         }
 
         return wrapped;
     }
 
-    private static int getMaxWidth(TextRenderer textRenderer, List<? extends Text> lines) {
+    public static List<ClientTooltipComponent> wrapComponents(List<ClientTooltipComponent> components, Font font, int screenWidth, int screenHeight, int x, ClientTooltipPositioner tooltipPositioner) {
+        List<ClientTooltipComponent> wrapped = new ArrayList<>();
+        List<Component> groupedText = new ArrayList<>();
+
+        for (ClientTooltipComponent component : components) {
+            if (component instanceof ClientTextTooltip textTooltip) {
+                FormattedCharSequence charSequence = ((ClientTextTooltipAccessor) textTooltip).getText();
+                Component text = TextUtil.toText(charSequence);
+                groupedText.add(text);
+            } else {
+                if (!groupedText.isEmpty()) {
+                    wrapped.addAll(convertComponentToTooltip(groupedText, font, screenWidth, screenHeight, x, tooltipPositioner));
+                    groupedText.clear();
+                }
+
+                wrapped.add(component);
+            }
+        }
+        if (!groupedText.isEmpty()) {
+            wrapped.addAll(convertComponentToTooltip(groupedText, font, screenWidth, screenHeight, x, tooltipPositioner));
+            groupedText.clear();
+        }
+
+        return wrapped;
+    }
+
+    private static List<ClientTextTooltip> convertComponentToTooltip(List<Component> lines, Font font, int screenWidth, int screenHeight, int x, ClientTooltipPositioner tooltipPositioner) {
+        return wrapTooltipLines(screenWidth, screenHeight, font, lines, x, tooltipPositioner).stream()
+                .map(ClientTextTooltip::new)
+                .toList();
+    }
+
+    private static int getMaxWidth(Font textRenderer, List<? extends Component> lines) {
         int maxWidth = 0;
 
-        for (Text line : lines) {
-            int width = textRenderer.getWidth(line);
+        for (Component line : lines) {
+            int width = textRenderer.width(line);
             if (width > maxWidth)
                 maxWidth = width;
         }

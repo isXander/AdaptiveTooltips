@@ -10,10 +10,10 @@ import java.util.TreeMap;
 public class BestCornerPositionModule implements TooltipPositionModule {
     @Override
     public Optional<Vector2ic> repositionTooltip(int x, int y, int width, int height, int mouseX, int mouseY, int screenWidth, int screenHeight) {
-        if (!AdaptiveTooltipConfig.INSTANCE.getConfig().bestCorner)
+        if (!AdaptiveTooltipConfig.HANDLER.instance().bestCorner)
             return Optional.empty();
 
-        if ((x < 4 || y < 4) || AdaptiveTooltipConfig.INSTANCE.getConfig().alwaysBestCorner) {
+        if ((x < 4 || y < 4) || AdaptiveTooltipConfig.HANDLER.instance().alwaysBestCorner) {
             int topObstruction = Math.max(5 + height - mouseY, 0);
             int bottomObstruction = Math.max(mouseY - (screenHeight - 5 - height), 0);
             int leftObstruction = Math.max((5 + width - mouseX), 0);

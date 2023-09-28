@@ -7,6 +7,6 @@ import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 public class ModMenuIntegration implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return AdaptiveTooltipConfig::makeScreen;
+        return parent -> AdaptiveTooltipConfig.HANDLER.generateGui().generateScreen(parent);
     }
 }

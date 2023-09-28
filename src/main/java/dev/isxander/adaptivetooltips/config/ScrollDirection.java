@@ -1,14 +1,14 @@
 package dev.isxander.adaptivetooltips.config;
 
-import dev.isxander.yacl.api.NameableEnum;
-import net.minecraft.text.Text;
+import dev.isxander.yacl3.api.NameableEnum;
+import net.minecraft.network.chat.Component;
 
 public enum ScrollDirection implements NameableEnum {
     REVERSE,
     NATURAL;
 
     @Override
-    public Text getDisplayName() {
-        return Text.translatable("adaptivetooltips.scroll_direction." + name().toLowerCase());
+    public Component getDisplayName() {
+        return Component.translatable("adaptivetooltips.scroll_direction." + name().toLowerCase());
     }
 }
