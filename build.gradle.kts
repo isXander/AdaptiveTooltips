@@ -110,6 +110,10 @@ if (modrinthId.isNotEmpty()) {
         changelog.set(changelogText)
         syncBodyFrom.set(file("README.md").readText())
     }
+
+    tasks.getByName("modrinth") {
+        dependsOn("optimizeOutputsOfRemapJar")
+    }
 }
 
 val curseforgeId: String by project
@@ -150,6 +154,10 @@ githubRelease {
     targetCommitish("1.20.x/dev")
     body(changelogText)
     releaseAssets(tasks["remapJar"].outputs.files)
+
+    tasks.getByName("githubRelease") {
+        dependsOn("optimizeOutputsOfRemapJar")
+    }
 }
 
 publishing {
@@ -159,6 +167,8 @@ publishing {
             artifactId = "adaptive-tooltips"
 
             from(components["java"])
+
+            tasks["generateMetadataFileForModPublication"].dependsOn("optimizeOutputsOfRemapJar")
         }
     }
 
