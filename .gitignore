@@ -3,3 +3,9 @@ build
 /.idea
 .gradle
 !.gitkeep
+.classpath
+.project
+bin/
+*.DS_Store
+*.launch
+.settings/
