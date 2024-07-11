@@ -4,12 +4,13 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.helpers.YACLTooltipPositioner;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.WidgetTooltipHolder;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(AbstractWidget.class)
-public class ClickableWidgetMixin {
+@Mixin(WidgetTooltipHolder.class)
+public class WidgetTooltipHolderMixin {
     @ModifyReturnValue(method = "createTooltipPositioner", at = @At("RETURN"))
     private ClientTooltipPositioner changePositioner(ClientTooltipPositioner tooltipPositioner) {
         if (AdaptiveTooltipConfig.HANDLER.instance().useYACLTooltipPositioner)

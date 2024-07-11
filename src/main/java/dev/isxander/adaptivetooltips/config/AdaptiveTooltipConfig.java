@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class AdaptiveTooltipConfig {
     public static final ConfigClassHandler<AdaptiveTooltipConfig> HANDLER = ConfigClassHandler.createBuilder(AdaptiveTooltipConfig.class)
-            .id(new ResourceLocation("adaptivetooltips", "config"))
+            .id(ResourceLocation.fromNamespaceAndPath("adaptivetooltips", "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"))
                     .setJson5(true)

@@ -5,13 +5,16 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BundleTooltipComponentAccessor",
-    "ClickableWidgetMixin",
     "ClientTextTooltipAccessor",
     "GameRendererMixin",
     "GuiGraphicsMixin",
     "HoveredTooltipPositionerMixin",
     "MouseMixin",
     "TooltipMixin",
-    "TooltipRenderUtilMixin"
-  ]
+    "TooltipRenderUtilMixin",
+    "WidgetTooltipHolderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

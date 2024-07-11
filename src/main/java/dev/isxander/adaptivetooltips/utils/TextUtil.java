@@ -5,9 +5,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TextUtil {
     public static MutableComponent toText(FormattedCharSequence charSequence) {
         MutableComponent text = Component.empty();

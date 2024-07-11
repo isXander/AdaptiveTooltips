@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
     @Inject(method = "render", at = @At("RETURN"))
-    private void checkTooltipRendered(float tickDelta, long startTime, boolean tick, CallbackInfo ci) {
+    private void checkTooltipRendered(CallbackInfo ci) {
         if (!ScrollTracker.renderedThisFrame) {
             ScrollTracker.reset();
         }
