@@ -1,13 +1,13 @@
 [versions]
 loom = "1.7.+"
 
-minotaur = "2.7.+"
+minotaur = "2.8.+"
 cursegradle = "2.+"
 github_release = "2.+"
 machete = "2.+"
 
 minecraft = "1.21"
-quilt_mappings = "1"
+quilt_mappings = "5"
 fabric_loader = "0.15.11"
 fabric_api = "0.100.1+1.21"
 yacl = "3.5.0+1.21-fabric"
