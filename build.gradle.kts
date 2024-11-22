@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "dev.isxander"
-version = "1.3.0"
+version = "1.4.0"
 
 repositories {
     mavenCentral()
@@ -97,10 +97,15 @@ if (modrinthId.isNotEmpty()) {
         versionNumber.set("${project.version}")
         versionType.set("release")
         uploadFile.set(tasks["remapJar"])
-        gameVersions.set(listOf("1.20.1", "1.20.2"))
+        gameVersions.set(listOf("1.21", "1.21.1"))
         loaders.set(listOf("fabric", "quilt"))
         changelog.set(changelogText)
         syncBodyFrom.set(file("README.md").readText())
+        dependencies {
+            required.project("fabric-api")
+            required.project("yacl")
+            optional.project("modmenu")
+        }
     }
 
     tasks.getByName("modrinth") {
@@ -119,11 +124,17 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
 
             id = curseforgeId
             releaseType = "release"
-            addGameVersion("1.20.1")
-            addGameVersion("1.20.2")
+            addGameVersion("1.21")
+            addGameVersion("1.21.1")
             addGameVersion("Fabric")
             addGameVersion("Quilt")
-            addGameVersion("Java 17")
+            addGameVersion("Java 21")
+
+            relations(closureOf<me.hypherionmc.cursegradle.CurseRelation> {
+                requiredDependency("fabric-api")
+                requiredDependency("yacl")
+                optionalDependency("modmenu")
+            })
 
             changelog = changelogText
             changelogType = "markdown"

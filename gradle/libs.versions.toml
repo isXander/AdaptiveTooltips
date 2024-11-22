@@ -1,5 +1,5 @@
 [versions]
-loom = "1.7.+"
+loom = "1.8.+"
 
 minotaur = "2.8.+"
 cursegradle = "2.+"
