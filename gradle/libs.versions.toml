@@ -6,12 +6,12 @@ cursegradle = "2.+"
 github_release = "2.+"
 machete = "2.+"
 
-minecraft = "1.21.10"
-quilt_mappings = "4"
+minecraft = "1.21.11"
+quilt_mappings = "2"
 fabric_loader = "0.19.2"
-fabric_api = "0.138.4+1.21.10"
-yacl = "3.8.2+1.21.10-fabric"
-mod_menu = "16.0.1"
+fabric_api = "0.141.4+1.21.11"
+yacl = "3.8.2+1.21.11-fabric"
+mod_menu = "17.0.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

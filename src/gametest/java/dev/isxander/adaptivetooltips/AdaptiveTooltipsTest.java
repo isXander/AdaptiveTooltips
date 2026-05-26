@@ -130,7 +130,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         context.clickScreenButton("options.video");
         context.waitForScreen(VideoSettingsScreen.class);
         int guiScale = context.computeOnClient(minecraft -> minecraft.getWindow().getGuiScale());
-        context.getInput().setCursorPos((58 + 75) * guiScale, (112 + 10) * guiScale);
+        context.getInput().setCursorPos((58 + 75) * guiScale, (100 + 10) * guiScale);
 
         testWithConfig(
                 context,
