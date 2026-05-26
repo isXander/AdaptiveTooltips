@@ -36,6 +36,8 @@
   "yacl3.config.adaptivetooltips:config.horizontalScrollSensitivity.desc": "Amount of pixels to move the tooltip horizontal per scroll step.",
   "yacl3.config.adaptivetooltips:config.category.adaptivetooltips.group.style": "Style",
   "yacl3.config.adaptivetooltips:config.category.adaptivetooltips.group.style.desc": "Options that modify how tooltips look.",
+  "yacl3.config.adaptivetooltips:config.tooltipTransparency": "Tooltip Transparency",
+  "yacl3.config.adaptivetooltips:config.tooltipTransparency.desc": "Modifies the transparency of tooltips by a percentage.",
   "yacl3.config.adaptivetooltips:config.removeFirstLinePadding": "Remove First Line Padding",
   "yacl3.config.adaptivetooltips:config.removeFirstLinePadding.desc": "Removes the extra 2 pixels of line padding from the first line of the tooltip.",
   "adaptivetooltips.wrap_text_behaviour.off": "Off",

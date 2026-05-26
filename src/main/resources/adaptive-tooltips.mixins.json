@@ -11,6 +11,7 @@
     "HoveredTooltipPositionerMixin",
     "MouseMixin",
     "TooltipMixin",
+    "TooltipRenderUtilMixin",
     "WidgetTooltipHolderMixin"
   ],
   "injectors": {

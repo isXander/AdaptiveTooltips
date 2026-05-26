@@ -6,6 +6,7 @@ import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import dev.isxander.yacl3.gui.ValueFormatters;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -108,6 +109,12 @@ public class AdaptiveTooltipConfig {
     @FormatTranslation(PIXELS_FORMAT)
     @SerialEntry
     public int horizontalScrollSensitivity = 10;
+
+    @AutoGen(category = CATEGORY, group = STYLE)
+    @FloatSlider(min = 0f, max = 1f, step = 0.1f)
+    @CustomFormat(ValueFormatters.PercentFormatter.class)
+    @SerialEntry
+    public float tooltipTransparency = 1f;
 
     @AutoGen(category = CATEGORY, group = STYLE)
     @TickBox
