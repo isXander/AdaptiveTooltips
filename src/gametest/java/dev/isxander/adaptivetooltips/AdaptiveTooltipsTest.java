@@ -1,19 +1,26 @@
 package dev.isxander.adaptivetooltips;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.config.WrapTextBehaviour;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
 import net.minecraft.world.inventory.Slot;
 
 import java.util.function.BiConsumer;
 
 @SuppressWarnings("UnstableApiUsage")
 public class AdaptiveTooltipsTest implements FabricClientGameTest {
+    private static final String LONG_LORE = "'This is a very long tooltip line that should definitely be wrapped because it contains so many words that it exceeds the screen width and will need to be broken into multiple lines by the adaptive tooltips mod.'";
+    private static final String MANY_LINES_LORE = "'Line 1','Line 2','Line 3','Line 4','Line 5','Line 6','Line 7','Line 8','Line 9','Line 10','Line 11','Line 12','Line 13','Line 14','Line 15','Line 16','Line 17','Line 18','Line 19','Line 20','Line 21','Line 22','Line 23','Line 24','Line 25'";
+
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
@@ -41,7 +48,9 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
             testPrioritizeTooltipTop(context, singleplayer);
             testBedrockCentering(context, singleplayer);
             testBestCorner(context, singleplayer);
+            testScrolling(context, singleplayer);
             testTransparency(context, singleplayer);
+            testYACLTooltipPositioner(context);
         }
     }
 
@@ -49,7 +58,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         testWithConfig(
                 context, singleplayer,
                 "wrap_text", (config, value) -> config.wrapText = value,
-                "'This is a very long tooltip line that should definitely be wrapped because it contains so many words that it exceeds the screen width and will need to be broken into multiple lines by the adaptive tooltips mod.'",
+                LONG_LORE,
                 WrapTextBehaviour.SCREEN_WIDTH, WrapTextBehaviour.REMAINING_WIDTH, WrapTextBehaviour.OFF
         );
     }
@@ -58,7 +67,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         testWithConfig(
                 context, singleplayer,
                 "prioritize_tooltip_top", (config, value) -> config.prioritizeTooltipTop = value,
-                "'Line 1','Line 2','Line 3','Line 4','Line 5','Line 6','Line 7','Line 8','Line 9','Line 10','Line 11','Line 12','Line 13','Line 14','Line 15','Line 16','Line 17','Line 18','Line 19','Line 20','Line 21','Line 22','Line 23','Line 24','Line 25'",
+                MANY_LINES_LORE,
                 true, false
         );
     }
@@ -67,7 +76,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         testWithConfig(
                 context, singleplayer,
                 "bedrock_centering", (config, value) -> config.bedrockCentering = value,
-                "'This is a very long tooltip line that should definitely be wrapped because it contains so many words that it exceeds the screen width and will need to be broken into multiple lines by the adaptive tooltips mod.'",
+                LONG_LORE,
                 true, false
         );
     }
@@ -86,6 +95,22 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         AdaptiveTooltipConfig.HANDLER.instance().bedrockCentering = true;
     }
 
+    private static void testScrolling(ClientGameTestContext context, TestSingleplayerContext singleplayer) {
+        AdaptiveTooltipConfig.HANDLER.instance().smoothScrolling = false;
+        testWithConfig(
+                context, singleplayer,
+                "scrolling", (config, value) -> {
+                    context.getInput().holdAlt();
+                    context.getInput().scroll(value);
+                    context.waitTick();
+                    context.getInput().releaseAlt();
+                },
+                MANY_LINES_LORE,
+                0d, 5d
+        );
+        AdaptiveTooltipConfig.HANDLER.instance().smoothScrolling = true;
+    }
+
     private static void testTransparency(ClientGameTestContext context, TestSingleplayerContext singleplayer) {
         testWithConfig(
                 context, singleplayer,
@@ -95,12 +120,43 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         );
     }
 
+    private static void testYACLTooltipPositioner(ClientGameTestContext context) {
+        context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+        context.waitForScreen(null);
+        context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+        context.waitForScreen(PauseScreen.class);
+        context.clickScreenButton("menu.options");
+        context.waitForScreen(OptionsScreen.class);
+        context.clickScreenButton("options.video");
+        context.waitForScreen(VideoSettingsScreen.class);
+        int guiScale = context.computeOnClient(minecraft -> minecraft.getWindow().getGuiScale());
+        context.getInput().setCursorPos((58 + 75) * guiScale, (112 + 10) * guiScale);
+
+        testWithConfig(
+                context,
+                "yacl_tooltip_positioner", (config, value) -> config.useYACLTooltipPositioner = value,
+                false, true
+        );
+
+        context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+        context.waitForScreen(OptionsScreen.class);
+        context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+        context.waitForScreen(PauseScreen.class);
+        context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+        context.waitForScreen(null);
+    }
+
     @SafeVarargs
     private static <T> void testWithConfig(ClientGameTestContext context, TestSingleplayerContext singleplayer, String name, BiConsumer<AdaptiveTooltipConfig, T> config, String lore, T... values) {
         singleplayer.getServer().runCommand("clear @a");
         singleplayer.getServer().runCommand("give @a dirt[lore=[" + lore + "]]");
         context.waitTick();
 
+        testWithConfig(context, name, config, values);
+    }
+
+    @SafeVarargs
+    private static <T> void testWithConfig(ClientGameTestContext context, String name, BiConsumer<AdaptiveTooltipConfig, T> config, T... values) {
         for (T value : values) {
             config.accept(AdaptiveTooltipConfig.HANDLER.instance(), value);
             context.waitTick();
