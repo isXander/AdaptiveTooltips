@@ -8,13 +8,13 @@ import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import dev.isxander.yacl3.gui.ValueFormatters;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 public class AdaptiveTooltipConfig {
     public static final ConfigClassHandler<AdaptiveTooltipConfig> HANDLER = ConfigClassHandler.createBuilder(AdaptiveTooltipConfig.class)
-            .id(ResourceLocation.fromNamespaceAndPath("adaptivetooltips", "config"))
+            .id(Identifier.fromNamespaceAndPath("adaptivetooltips", "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"))
                     .setJson5(true)

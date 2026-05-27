@@ -49,7 +49,7 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean onMouseClicked(double mouseX, double mouseY, int button) {
             if (!isMouseOver(mouseX, mouseY) || !isAvailable()) {
                 return false;
             }
@@ -72,7 +72,7 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
             if (awaitingKeyPress) {
                 control.option().requestSet(keyCode);
                 awaitingKeyPress = false;

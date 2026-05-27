@@ -1,17 +1,17 @@
 [versions]
-loom = "1.10.+"
+loom = "1.16.+"
 
 minotaur = "2.8.+"
 cursegradle = "2.+"
 github_release = "2.+"
 machete = "2.+"
 
-minecraft = "1.21.6"
-quilt_mappings = "1"
-fabric_loader = "0.16.14"
-fabric_api = "0.127.1+1.21.6"
-yacl = "3.7.1+1.21.6-fabric"
-mod_menu = "15.0.0-beta.2"
+minecraft = "1.21.11"
+quilt_mappings = "2"
+fabric_loader = "0.19.2"
+fabric_api = "0.141.4+1.21.11"
+yacl = "3.8.2+1.21.11-fabric"
+mod_menu = "17.0.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
