@@ -1,7 +1,9 @@
 package dev.isxander.adaptivetooltips.mixins;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
 import dev.isxander.adaptivetooltips.helpers.ScrollTracker;
@@ -35,12 +37,12 @@ public abstract class GuiGraphicsMixin {
 
     // wrapping
     @ModifyVariable(method = "renderTooltipInternal", at = @At("HEAD"), argsOnly = true)
-    private List<ClientTooltipComponent> modifyTooltip(List<ClientTooltipComponent> tooltip, Font font, List<ClientTooltipComponent> dontuse, int x, int y, ClientTooltipPositioner positioner) {
+    private List<ClientTooltipComponent> modifyTooltip(List<ClientTooltipComponent> tooltip, @Local(argsOnly = true) Font font, @Local(argsOnly = true, ordinal = 0) int x, @Local(argsOnly = true, ordinal = 1) int y, @Local(argsOnly = true) ClientTooltipPositioner positioner) {
         return TooltipWrapper.wrapComponents(tooltip, font, this.guiWidth(), this.guiHeight(), x, positioner);
     }
 
     @WrapOperation(method = "renderTooltipInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"))
-    private Vector2ic moveTooltip(ClientTooltipPositioner positioner, int screenWidth, int screenHeight, int x, int y, int width, int height, Operation<Vector2ic> operation, Font font, List<ClientTooltipComponent> tooltip, int mouseX, int mouseY) {
+    private Vector2ic moveTooltip(ClientTooltipPositioner positioner, int screenWidth, int screenHeight, int x, int y, int width, int height, Operation<Vector2ic> operation, @Local(argsOnly = true) List<ClientTooltipComponent> tooltip, @Local(argsOnly = true, ordinal = 0) int mouseX, @Local(argsOnly = true, ordinal = 1) int mouseY) {
         Vector2ic currentPosition = operation.call(positioner, screenWidth, screenHeight, x, y, width, height);
 
         pose().pushPose(); // injection is before matrices.push()
@@ -64,14 +66,12 @@ public abstract class GuiGraphicsMixin {
     }
 
     @Inject(method = "renderTooltipInternal", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", ordinal = 0))
-    private void closeCustomMatrices(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y, ClientTooltipPositioner positioner, CallbackInfo ci) {
+    private void closeCustomMatrices(CallbackInfo ci) {
         pose().popPose();
     }
 
-    @ModifyConstant(method = "renderTooltipInternal", constant = @Constant(intValue = 2))
+    @ModifyExpressionValue(method = "renderTooltipInternal", at = @At(value = "CONSTANT", args = "intValue=2"))
     private int removeFirstLinePadding(int padding) {
-        if (AdaptiveTooltipConfig.HANDLER.instance().removeFirstLinePadding)
-            return 0;
-        return padding;
+        return AdaptiveTooltipConfig.HANDLER.instance().removeFirstLinePadding ? 0 : padding;
     }
 }

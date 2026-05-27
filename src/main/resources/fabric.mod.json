@@ -27,11 +27,11 @@
     "adaptive-tooltips.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.15.11",
-    "minecraft": "~1.21",
+    "fabricloader": ">=0.16.7",
+    "minecraft": "~1.21.2",
     "java": ">=21",
     "fabric-api": "*",
-    "yet_another_config_lib_v3": ">=3.5.0+1.21"
+    "yet_another_config_lib_v3": ">=3.6.1+1.21.2"
   },
   "breaks": {
     "tooltipfix": "*"
