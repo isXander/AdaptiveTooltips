@@ -50,7 +50,7 @@ public class ScrollTracker {
         tick(components, x, y, width, height, screenWidth, screenHeight, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks());
 
         // have to use a translate rather than moving the tooltip's x and y because int precision is too jittery
-        graphics.pose().translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll(), 0);
+        graphics.pose().translate(ScrollTracker.getHorizontalScroll(), ScrollTracker.getVerticalScroll());
     }
 
     private static void tick(List<ClientTooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight, float tickDelta) {

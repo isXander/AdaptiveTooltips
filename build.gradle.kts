@@ -26,6 +26,7 @@ val minecraftVersion = libs.versions.minecraft.get()
 
 dependencies {
     minecraft(libs.minecraft)
+    @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         mappings("org.quiltmc:quilt-mappings:$minecraftVersion+build.${libs.versions.quilt.mappings.get()}:intermediary-v2")
         officialMojangMappings()
@@ -35,6 +36,20 @@ dependencies {
     modImplementation(libs.fabric.api)
     modImplementation(libs.yacl)
     modImplementation(libs.mod.menu)
+
+    productionRuntimeMods(libs.fabric.api)
+    productionRuntimeMods(libs.yacl)
+}
+
+fabricApi {
+    @Suppress("UnstableApiUsage")
+    configureTests {
+        createSourceSet = true
+        modId = "adaptive-tooltips-test"
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
 }
 
 tasks {
@@ -69,6 +84,12 @@ tasks {
     
     remapSourcesJar {
         archiveClassifier.set("fabric-$minecraftVersion-sources")   
+    }
+
+    @Suppress("UnstableApiUsage")
+    register<net.fabricmc.loom.task.prod.ClientProductionRunTask>("runProductionClientGameTest") {
+        jvmArgs.add("-Dfabric.client.gametest")
+        useXVFB.set(true)
     }
 
     register("releaseMod") {
