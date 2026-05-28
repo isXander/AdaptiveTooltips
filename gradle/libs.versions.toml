@@ -6,12 +6,11 @@ cursegradle = "2.+"
 github_release = "2.+"
 machete = "2.+"
 
-minecraft = "1.21.11"
-quilt_mappings = "2"
+minecraft = "26.1.2"
 fabric_loader = "0.19.2"
-fabric_api = "0.141.4+1.21.11"
-yacl = "3.8.2+1.21.11-fabric"
-mod_menu = "17.0.0"
+fabric_api = "0.150.0+26.1.2"
+yacl = "3.9.3+26.1-fabric"
+mod_menu = "18.0.0-beta.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -22,7 +21,7 @@ yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
 mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod_menu" }
 
 [plugins]
-loom = { id = "fabric-loom", version.ref = "loom" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 cursegradle = { id = "me.hypherionmc.cursegradle", version.ref = "cursegradle" }

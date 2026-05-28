@@ -24,7 +24,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-            singleplayer.getClientWorld().waitForChunksRender();
+            singleplayer.getClientLevel().waitForChunksRender();
 
             context.getInput().pressKey(options -> options.keyInventory);
             context.waitForScreen(InventoryScreen.class);
@@ -99,7 +99,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
         AdaptiveTooltipConfig.HANDLER.instance().smoothScrolling = false;
         testWithConfig(
                 context, singleplayer,
-                "scrolling", (config, value) -> {
+                "scrolling", (_, value) -> {
                     context.getInput().holdAlt();
                     context.getInput().scroll(value);
                     context.waitTick();
