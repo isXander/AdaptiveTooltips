@@ -7,7 +7,7 @@
     "BundleTooltipComponentAccessor",
     "ClientTextTooltipAccessor",
     "GameRendererMixin",
-    "GuiGraphicsMixin",
+    "GuiGraphicsExtractorMixin",
     "HoveredTooltipPositionerMixin",
     "MouseMixin",
     "TooltipMixin",

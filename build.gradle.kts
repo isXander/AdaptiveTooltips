@@ -26,16 +26,11 @@ val minecraftVersion = libs.versions.minecraft.get()
 
 dependencies {
     minecraft(libs.minecraft)
-    @Suppress("UnstableApiUsage")
-    mappings(loom.layered {
-        mappings("org.quiltmc:quilt-mappings:$minecraftVersion+build.${libs.versions.quilt.mappings.get()}:intermediary-v2")
-        officialMojangMappings()
-    })
-    modImplementation(libs.fabric.loader)
+    implementation(libs.fabric.loader)
 
-    modImplementation(libs.fabric.api)
-    modImplementation(libs.yacl)
-    modImplementation(libs.mod.menu)
+    implementation(libs.fabric.api)
+    implementation(libs.yacl)
+    implementation(libs.mod.menu)
 
     productionRuntimeMods(libs.fabric.api)
     productionRuntimeMods(libs.yacl)
@@ -50,6 +45,10 @@ fabricApi {
         enableClientGameTests = true
         eula = true
     }
+}
+
+java {
+    withSourcesJar()
 }
 
 tasks {
@@ -77,13 +76,13 @@ tasks {
             )
         }
     }
-    
-    remapJar {
-        archiveClassifier.set("fabric-$minecraftVersion")   
+
+    jar {
+        archiveClassifier.set("fabric-$minecraftVersion")
     }
-    
-    remapSourcesJar {
-        archiveClassifier.set("fabric-$minecraftVersion-sources")   
+
+    named<Jar>("sourcesJar") {
+        archiveClassifier.set("fabric-$minecraftVersion-sources")
     }
 
     @Suppress("UnstableApiUsage")
@@ -103,10 +102,6 @@ tasks {
     }
 }
 
-java {
-    withSourcesJar()   
-}
-
 var changelogText = file("changelogs/${project.version}.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
 file("changelogs/header.md").takeIf { it.exists() }?.readText()?.let { changelogText = it + "\n\n" + changelogText }
 
@@ -117,7 +112,7 @@ if (modrinthId.isNotEmpty()) {
         projectId.set(modrinthId)
         versionNumber.set("${project.version}")
         versionType.set("release")
-        uploadFile.set(tasks["remapJar"])
+        uploadFile.set(tasks["jar"])
         gameVersions.set(listOf("1.20.1", "1.20.2"))
         loaders.set(listOf("fabric", "quilt"))
         changelog.set(changelogText)
@@ -125,7 +120,7 @@ if (modrinthId.isNotEmpty()) {
     }
 
     tasks.getByName("modrinth") {
-        dependsOn("optimizeOutputsOfRemapJar")
+        dependsOn("optimizeOutputsOfJar")
     }
 }
 
@@ -134,7 +129,7 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
     curseforge {
         apiKey = findProperty("curseforge.token")
         project(closureOf<me.hypherionmc.cursegradle.CurseProject> {
-            mainArtifact(tasks["remapJar"], closureOf<me.hypherionmc.cursegradle.CurseArtifact> {
+            mainArtifact(tasks["jar"], closureOf<me.hypherionmc.cursegradle.CurseArtifact> {
                 displayName = "${project.version}"
             })
 
@@ -166,10 +161,10 @@ if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
     tagName("${project.version}")
     targetCommitish("1.20.x/dev")
     body(changelogText)
-    releaseAssets(tasks["remapJar"].outputs.files)
+    releaseAssets(tasks["jar"].outputs.files)
 
     tasks.getByName("githubRelease") {
-        dependsOn("optimizeOutputsOfRemapJar")
+        dependsOn("optimizeOutputsOfJar")
     }
 }*/
 
@@ -181,7 +176,7 @@ publishing {
 
             from(components["java"])
 
-            tasks["generateMetadataFileForModPublication"].dependsOn("optimizeOutputsOfRemapJar")
+            tasks["generateMetadataFileForModPublication"].dependsOn("optimizeOutputsOfJar")
         }
     }
 

@@ -9,7 +9,10 @@ import dev.isxander.yacl3.gui.AbstractWidget;
 import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 public class KeyCodeController implements Controller<Integer> {
     public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYSYM.getOrCreate(code).getDisplayName();
@@ -49,8 +52,8 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        public boolean onMouseClicked(double mouseX, double mouseY, int button) {
-            if (!isMouseOver(mouseX, mouseY) || !isAvailable()) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (!isMouseOver(event.x(), event.y()) || !isAvailable()) {
                 return false;
             }
 
@@ -72,9 +75,9 @@ public class KeyCodeController implements Controller<Integer> {
         }
 
         @Override
-        public boolean onKeyPressed(int keyCode, int scanCode, int modifiers) {
+        public boolean keyPressed(@NonNull KeyEvent event) {
             if (awaitingKeyPress) {
-                control.option().requestSet(keyCode);
+                control.option().requestSet(event.key());
                 awaitingKeyPress = false;
                 return true;
             }

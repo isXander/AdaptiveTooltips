@@ -6,15 +6,16 @@ import dev.isxander.adaptivetooltips.mixins.BundleTooltipComponentAccessor;
 import dev.isxander.adaptivetooltips.mixins.ClientTextTooltipAccessor;
 import dev.isxander.adaptivetooltips.utils.TextUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientBundleTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ScrollTracker {
     private static int targetVerticalScroll = 0;
@@ -46,7 +47,7 @@ public class ScrollTracker {
         return currentHorizontalScroll;
     }
 
-    public static void scroll(GuiGraphics graphics, List<ClientTooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight) {
+    public static void scroll(GuiGraphicsExtractor graphics, List<ClientTooltipComponent> components, int x, int y, int width, int height, int screenWidth, int screenHeight) {
         tick(components, x, y, width, height, screenWidth, screenHeight, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks());
 
         // have to use a translate rather than moving the tooltip's x and y because int precision is too jittery
@@ -118,19 +119,19 @@ public class ScrollTracker {
                     return false;
             } else if (c1 instanceof ClientBundleTooltip bt1 && c2 instanceof ClientBundleTooltip bt2) {
                 // gets the inventory of each bundle and loops through each stack
-                
-                Iterator<ItemStack> i1 = ((BundleTooltipComponentAccessor) bt1).getContents().items().iterator();
-                Iterator<ItemStack> i2 = ((BundleTooltipComponentAccessor) bt2).getContents().items().iterator();
+
+                Iterator<ItemStackTemplate> i1 = ((BundleTooltipComponentAccessor) bt1).getContents().items().iterator();
+                Iterator<ItemStackTemplate> i2 = ((BundleTooltipComponentAccessor) bt2).getContents().items().iterator();
 
                 // iterate through both bundle inventories until either runs out
                 while (i1.hasNext() && i2.hasNext()) {
-                    ItemStack stack1 = i1.next();
-                    ItemStack stack2 = i2.next();
+                    ItemStackTemplate stack1 = i1.next();
+                    ItemStackTemplate stack2 = i2.next();
 
-                    if (!ItemStack.matches(stack1, stack2))
+                    if (!Objects.equals(stack1, stack2))
                         return false;
                 }
-                
+
                 // if either inventory has more items, we know they are not the same inventory
                 if (i1.hasNext() || i2.hasNext())
                     return false;
