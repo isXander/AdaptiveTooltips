@@ -36,14 +36,38 @@ public abstract class GuiGraphicsExtractorMixin {
 
     @Shadow public abstract int guiHeight();
 
+    // WARNING: Using `tooltip*` instead of `tooltip` because NeoForge patches the
+    // canonical method will an extra argument at the ent.
+
     // wrapping
-    @ModifyVariable(method = "tooltip", at = @At("HEAD"), argsOnly = true, name = "lines")
-    private List<ClientTooltipComponent> modifyTooltip(List<ClientTooltipComponent> tooltip, @Local(argsOnly = true, name = "font") Font font, @Local(argsOnly = true, name = "xo") int x, @Local(argsOnly = true, name = "yo") int y, @Local(argsOnly = true, name = "positioner") ClientTooltipPositioner positioner) {
-        return TooltipWrapper.wrapComponents(tooltip, font, this.guiWidth(), this.guiHeight(), x, positioner);
+    @ModifyVariable(method = "tooltip*", at = @At("HEAD"), argsOnly = true, name = "lines")
+    private List<ClientTooltipComponent> modifyTooltip(
+            List<ClientTooltipComponent> lines,
+            @Local(argsOnly = true, name = "font") Font font,
+            @Local(argsOnly = true, name = "xo") int xo,
+            @Local(argsOnly = true, name = "yo") int yo,
+            @Local(argsOnly = true, name = "positioner") ClientTooltipPositioner positioner
+    ) {
+        return TooltipWrapper.wrapComponents(lines, font, this.guiWidth(), this.guiHeight(), xo, positioner);
     }
 
-    @WrapOperation(method = "tooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"))
-    private Vector2ic moveTooltip(ClientTooltipPositioner positioner, int screenWidth, int screenHeight, int x, int y, int width, int height, Operation<Vector2ic> operation, @Local(argsOnly = true, name = "lines") List<ClientTooltipComponent> tooltip, @Local(argsOnly = true, name = "xo") int mouseX, @Local(argsOnly = true, name = "yo") int mouseY) {
+    @WrapOperation(
+            method = "tooltip*",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;positionTooltip(IIIIII)Lorg/joml/Vector2ic;"
+            )
+    )
+    private Vector2ic moveTooltip(
+            ClientTooltipPositioner positioner,
+            int screenWidth, int screenHeight,
+            int x, int y,
+            int width, int height,
+            Operation<Vector2ic> operation,
+            @Local(argsOnly = true, name = "lines") List<ClientTooltipComponent> lines,
+            @Local(argsOnly = true, name = "xo") int xo,
+            @Local(argsOnly = true, name = "yo") int yo
+    ) {
         Vector2ic currentPosition = operation.call(positioner, screenWidth, screenHeight, x, y, width, height);
 
         pose().pushMatrix(); // injection is before matrices.push()
@@ -56,22 +80,29 @@ public abstract class GuiGraphicsExtractorMixin {
                 new BedrockCenteringPositionModule(),
                 new BestCornerPositionModule()
         )) {
-            Optional<Vector2ic> position = tooltipPositionModule.repositionTooltip(currentPosition.x(), currentPosition.y(), width, height, mouseX, mouseY, this.guiWidth(), this.guiHeight());
+            Optional<Vector2ic> position = tooltipPositionModule.repositionTooltip(currentPosition.x(), currentPosition.y(), width, height, xo, yo, this.guiWidth(), this.guiHeight());
             if (position.isPresent())
                 currentPosition = position.get();
         }
 
-        ScrollTracker.scroll((GuiGraphicsExtractor) (Object) this, tooltip, currentPosition.x(), currentPosition.y(), width, height, screenWidth, screenHeight);
+        ScrollTracker.scroll((GuiGraphicsExtractor) (Object) this, lines, currentPosition.x(), currentPosition.y(), width, height, screenWidth, screenHeight);
 
         return currentPosition;
     }
 
-    @Inject(method = "tooltip", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;popMatrix()Lorg/joml/Matrix3x2fStack;", ordinal = 0))
+    @Inject(
+            method = "tooltip*",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lorg/joml/Matrix3x2fStack;popMatrix()Lorg/joml/Matrix3x2fStack;",
+                    ordinal = 0
+            )
+    )
     private void closeCustomMatrices(CallbackInfo ci) {
         pose().popMatrix();
     }
 
-    @ModifyExpressionValue(method = "tooltip", at = @At(value = "CONSTANT", args = "intValue=2"))
+    @ModifyExpressionValue(method = "tooltip*", at = @At(value = "CONSTANT", args = "intValue=2"))
     private int removeFirstLinePadding(int padding) {
         return AdaptiveTooltipConfig.HANDLER.instance().removeFirstLinePadding ? 0 : padding;
     }

@@ -2,12 +2,12 @@ package dev.isxander.adaptivetooltips.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.isxander.adaptivetooltips.config.gui.KeyCode;
+import dev.isxander.adaptivetooltips.platform.AdaptiveTooltipsPlatform;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.autogen.*;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import dev.isxander.yacl3.gui.ValueFormatters;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -16,7 +16,7 @@ public class AdaptiveTooltipConfig {
     public static final ConfigClassHandler<AdaptiveTooltipConfig> HANDLER = ConfigClassHandler.createBuilder(AdaptiveTooltipConfig.class)
             .id(Identifier.fromNamespaceAndPath("adaptivetooltips", "config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
-                    .setPath(FabricLoader.getInstance().getConfigDir().resolve("adaptive-tooltips.json"))
+                    .setPath(AdaptiveTooltipsPlatform.get().getConfigDir().resolve("adaptive-tooltips.json"))
                     .setJson5(true)
                     .build())
             .build();

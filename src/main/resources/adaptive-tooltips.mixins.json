@@ -2,7 +2,13 @@
   "package": "dev.isxander.adaptivetooltips.mixins",
   "required": true,
   "minVersion": "0.8",
-  "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
+  "compatibilityLevel": "JAVA_25",
+  "injectors": {
+    "defaultRequire": 1
+  },
   "client": [
     "BundleTooltipComponentAccessor",
     "ClientTextTooltipAccessor",
@@ -13,8 +19,5 @@
     "TooltipMixin",
     "TooltipRenderUtilMixin",
     "WidgetTooltipHolderMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  ]
 }

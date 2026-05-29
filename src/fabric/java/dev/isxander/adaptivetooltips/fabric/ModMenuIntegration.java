@@ -1,4 +1,4 @@
-package dev.isxander.adaptivetooltips.config.modmenu;
+package dev.isxander.adaptivetooltips.fabric;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

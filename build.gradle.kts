@@ -1,195 +1,173 @@
 plugins {
-    java
+    `java-library`
 
-    alias(libs.plugins.loom)
+    alias(libs.plugins.fabric.loom) apply false
+    alias(libs.plugins.neoforged.gradle) apply false
 
-    alias(libs.plugins.minotaur)
-    alias(libs.plugins.cursegradle)
-    alias(libs.plugins.github.release)
-    alias(libs.plugins.machete)
+    alias(libs.plugins.modstitch.multiloader)
+    alias(libs.plugins.modstitch.manifests)
+    alias(libs.plugins.modstitch.modrepos)
+
     `maven-publish`
-}
-
-group = "dev.isxander"
-version = "1.3.0"
-
-repositories {
-    mavenCentral()
-    maven("https://maven.isxander.dev/releases")
-    maven("https://maven.isxander.dev/snapshots")
-    maven("https://maven.terraformersmc.com/releases")
-    maven("https://maven.quiltmc.org/repository/release")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    alias(libs.plugins.mod.publish.plugin)
+    alias(libs.plugins.central.portal.publishing)
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
 
-dependencies {
-    minecraft(libs.minecraft)
-    implementation(libs.fabric.loader)
-
-    implementation(libs.fabric.api)
-    implementation(libs.yacl)
-    implementation(libs.mod.menu)
-
-    productionRuntimeMods(libs.fabric.api)
-    productionRuntimeMods(libs.yacl)
-}
-
-fabricApi {
-    @Suppress("UnstableApiUsage")
-    configureTests {
-        createSourceSet = true
-        modId = "adaptive-tooltips-test"
-        enableGameTests = false
-        enableClientGameTests = true
-        eula = true
-    }
-}
+group = "dev.isxander"
+version = "1.4.0+$minecraftVersion"
 
 java {
-    withSourcesJar()
-}
-
-tasks {
-    processResources {
-        val modId: String by project
-        val modName: String by project
-        val modDescription: String by project
-        val githubProject: String by project
-
-        inputs.property("id", modId)
-        inputs.property("group", project.group)
-        inputs.property("name", modName)
-        inputs.property("description", modDescription)
-        inputs.property("version", project.version)
-        inputs.property("github", githubProject)
-
-        filesMatching("fabric.mod.json") {
-            expand(
-                "id" to modId,
-                "group" to project.group,
-                "name" to modName,
-                "description" to modDescription,
-                "version" to project.version,
-                "github" to githubProject,
-            )
-        }
-    }
-
-    jar {
-        archiveClassifier.set("fabric-$minecraftVersion")
-    }
-
-    named<Jar>("sourcesJar") {
-        archiveClassifier.set("fabric-$minecraftVersion-sources")
-    }
-
-    @Suppress("UnstableApiUsage")
-    register<net.fabricmc.loom.task.prod.ClientProductionRunTask>("runProductionClientGameTest") {
-        jvmArgs.add("-Dfabric.client.gametest")
-        useXVFB.set(true)
-    }
-
-    register("releaseMod") {
-        group = "mod"
-
-        dependsOn("modrinth")
-        dependsOn("modrinthSyncBody")
-        dependsOn("curseforge")
-        dependsOn("publish")
-        dependsOn("githubRelease")
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
-var changelogText = file("changelogs/${project.version}.md").takeIf { it.exists() }?.readText() ?: "No changelog provided."
-file("changelogs/header.md").takeIf { it.exists() }?.readText()?.let { changelogText = it + "\n\n" + changelogText }
+repositories {
+    mavenCentral()
+    isxander()
+    terraformersMC()
+}
 
-val modrinthId: String by project
-if (modrinthId.isNotEmpty()) {
+dependencies {
+    minecraft(libs.minecraft)
+    fabricLoader(libs.fabric.loader)
+
+    implementation(libs.yacl.fabric) // no common artifact of yacl
+
+    fabricApi(libs.fabric.api)
+    fabricApi(libs.yacl.fabric)
+    fabricImplementation(libs.mod.menu)
+
+    neoforgeImplementation(libs.neoforge)
+    neoforgeImplementation(libs.yacl.neoforge)
+}
+
+val minecraftVersionRange = "[26.1,26.2)"
+val supportedMinecraftVersions = manifests.minecraftReleasesMatching(minecraftVersionRange)
+
+manifests {
+    val common = manifest {
+        modId = providers.gradleProperty("mod.id")
+        version = project.version.toString()
+        displayName = providers.gradleProperty("mod.name")
+        description = providers.gradleProperty("mod.description")
+        authors.add("isXander")
+        iconPath = "icon.png"
+        licenses.add("LGPL-3.0-or-later")
+        issueTrackerUrl = providers.gradleProperty("mod.issuesUrl")
+        sourcesUrl = providers.gradleProperty("mod.sourcesUrl")
+        homepage = sourcesUrl
+        mixin("adaptive-tooltips.mixins.json")
+        dependency("minecraft", REQUIRED, minecraftVersionRange)
+        dependency("yet_another_config_lib_v3", REQUIRED, "[3.6.3,4)")
+    }
+
+    fabricModJson(sourceSets.fabric.get()) {
+        from(common)
+        provides.add("adaptive-tooltips") // legacy mod id
+        environment = CLIENT
+        entrypoint("client", "dev.isxander.adaptivetooltips.fabric.AdaptiveTooltipsFabric")
+        entrypoint("modmenu", "dev.isxander.adaptivetooltips.fabric.ModMenuIntegration")
+        dependency("fabricloader", REQUIRED, "[0.19,)")
+        dependency("fabric-api", REQUIRED, "(,)")
+    }
+
+    neoForgeModsToml(sourceSets.neoforge.get()) {
+        from(common)
+    }
+}
+
+// TODO: https://github.com/FabricMC/fabric-loom/pull/1568
+//fabricApi {
+//    @Suppress("UnstableApiUsage")
+//    configureTests {
+//        createSourceSet = true
+//        modId = "adaptive-tooltips-test"
+//        enableGameTests = false
+//        enableClientGameTests = true
+//        eula = true
+//    }
+//}
+
+//sourceSets.named("gametest") {
+//
+//}
+
+tasks.withType<Jar> {
+    from(rootProject.file("LICENSE")) {
+        into("META-INF")
+    }
+}
+
+publishMods {
+    file = tasks.universalJar.flatMap { it.archiveFile }
+    additionalFiles.from(tasks.fabricJar.flatMap { it.archiveFile })
+    additionalFiles.from(tasks.neoforgeJar.flatMap { it.archiveFile })
+
+    displayName = providers.gradleProperty("mod.name")
+    version = project.version.toString()
+    modLoaders.addAll("fabric", "neoforge")
+    type = STABLE
+    changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
+        .map { it.replace("{version}", project.version.toString()) }
+
     modrinth {
-        token.set(findProperty("modrinth.token")?.toString())
-        projectId.set(modrinthId)
-        versionNumber.set("${project.version}")
-        versionType.set("release")
-        uploadFile.set(tasks["jar"])
-        gameVersions.set(listOf("1.20.1", "1.20.2"))
-        loaders.set(listOf("fabric", "quilt"))
-        changelog.set(changelogText)
-        syncBodyFrom.set(file("README.md").readText())
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = providers.gradleProperty("modrinth.id")
+        minecraftVersions.addAll(supportedMinecraftVersions)
+        announcementTitle = "Download from Modrinth"
+
+        requires("fabric-api", "yacl")
+        optional("modmenu")
     }
 
-    tasks.getByName("modrinth") {
-        dependsOn("optimizeOutputsOfJar")
-    }
-}
-
-val curseforgeId: String by project
-if (hasProperty("curseforge.token") && curseforgeId.isNotEmpty()) {
     curseforge {
-        apiKey = findProperty("curseforge.token")
-        project(closureOf<me.hypherionmc.cursegradle.CurseProject> {
-            mainArtifact(tasks["jar"], closureOf<me.hypherionmc.cursegradle.CurseArtifact> {
-                displayName = "${project.version}"
-            })
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = providers.gradleProperty("curseforge.id")
+        minecraftVersions.addAll(supportedMinecraftVersions)
+        announcementTitle = "Download from Curseforge"
 
-            id = curseforgeId
-            releaseType = "release"
-            addGameVersion("1.20.1")
-            addGameVersion("1.20.2")
-            addGameVersion("Fabric")
-            addGameVersion("Quilt")
-            addGameVersion("Java 17")
+        requires("fabric-api", "yacl")
+        optional("modmenu")
+    }
 
-            changelog = changelogText
-            changelogType = "markdown"
-        })
-
-        options(closureOf<me.hypherionmc.cursegradle.Options> {
-            forgeGradleIntegration = false
-        })
+    discord {
+        webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK_URL")
+        dryRunWebhookUrl = providers.environmentVariable("DISCORD_WEBHOOK_URL_DRY_RUN")
+        username = displayName
+        avatarUrl = "https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/src/main/resources/icon.png"
+        content = changelog.zip(providers.gradleProperty("discord.ping")) { c, p -> "$c\n\n$p" }
     }
 }
 
-/*githubRelease {
-    token(findProperty("github.token")?.toString())
+centralPortalPublishing.bundle("main") {
+    username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
+    password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
 
-    val githubProject: String by project
-    val split = githubProject.split("/")
-    owner(split[0])
-    repo(split[1])
-    tagName("${project.version}")
-    targetCommitish("1.20.x/dev")
-    body(changelogText)
-    releaseAssets(tasks["jar"].outputs.files)
-
-    tasks.getByName("githubRelease") {
-        dependsOn("optimizeOutputsOfJar")
-    }
-}*/
+    publishingType = "AUTOMATIC"
+}
 
 publishing {
     publications {
-        create<MavenPublication>("mod") {
-            groupId = "dev.isxander"
-            artifactId = "adaptive-tooltips"
-
+        register<MavenPublication>("mavenJava") {
             from(components["java"])
-
-            tasks["generateMetadataFileForModPublication"].dependsOn("optimizeOutputsOfJar")
+            artifact(tasks.universalJar)
+            artifact(tasks.universalSourcesJar)
         }
     }
 
     repositories {
-        if (hasProperty("xander-repo.username") && hasProperty("xander-repo.password")) {
-            maven(url = "https://maven.isxander.dev/releases") {
-                credentials {
-                    username = property("xander-repo.username")?.toString()
-                    password = property("xander-repo.password")?.toString()
-                }
-            }
-        } else {
-            println("Xander Maven credentials not satisfied.")   
-        }
+        // Darn you, Kotlin!
+        val repos = this as ExtensionAware
+        repos.extensions.getByType<dev.lukebemish.centralportalpublishing.CentralPortalRepositoryHandlerExtension>()
+            .portalBundle(":", "main")
     }
+}
+
+tasks.register("publishAdaptiveTooltips") {
+    group = "publishing"
+    dependsOn("publishMods")
+    dependsOn("publishMavenJavaPublicationToCentralPortalMainRepository")
 }

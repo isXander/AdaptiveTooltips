@@ -1,4 +1,5 @@
-run
+run/
+runs/
 build
 /.idea
 .gradle
@@ -9,3 +10,4 @@ bin/
 *.DS_Store
 *.launch
 .settings/
+.env

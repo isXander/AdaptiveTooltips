@@ -1,29 +1,35 @@
 [versions]
-loom = "1.16.+"
-
-minotaur = "2.8.+"
-cursegradle = "2.+"
-github_release = "2.+"
-machete = "2.+"
+fabric-loom = "1.17.0-alpha.12"
+neoforged-gradle = "7.1.36"
+modstitch-multiloader = "0.1.5"
+modstitch-manifests = "0.1.3"
+modstitch-modrepos = "0.1.2"
+mod-publish-plugin = "2.0.0-beta.2"
+central-portal-publishing = "0.1.8"
 
 minecraft = "26.1.2"
-fabric_loader = "0.19.2"
-fabric_api = "0.150.0+26.1.2"
-yacl = "3.9.3+26.1-fabric"
-mod_menu = "18.0.0-beta.1"
+neoforge = "26.1.2.67-beta"
+fabric-loader = "0.19.2"
+fabric-api = "0.150.0+26.1.2"
+yacl-fabric = "3.9.3+26.1-fabric"
+yacl-neoforge = "3.9.3+26.1-neoforge"
+mod-menu = "18.0.0-beta.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
-fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
-yacl = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl" }
-mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod_menu" }
+fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+yacl-fabric = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl-fabric" }
+yacl-neoforge = { module = "dev.isxander:yet-another-config-lib", version.ref = "yacl-neoforge" }
+mod_menu = { module = "com.terraformersmc:modmenu", version.ref = "mod-menu" }
 
 [plugins]
-loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
-
-minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
-cursegradle = { id = "me.hypherionmc.cursegradle", version.ref = "cursegradle" }
-github_release = { id = "com.github.breadmoirai.github-release", version.ref = "github_release" }
-machete = { id = "io.github.p03w.machete", version.ref = "machete" }
+fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabric-loom" }
+neoforged-gradle = { id = "net.neoforged.gradle.userdev", version.ref = "neoforged-gradle" }
+modstitch-multiloader = { id = "dev.isxander.mtk.multiloader", version.ref = "modstitch-multiloader" }
+modstitch-manifests = { id = "dev.isxander.mtk.manifests", version.ref = "modstitch-manifests" }
+modstitch-modrepos = { id = "dev.isxander.mtk.modrepos", version.ref = "modstitch-modrepos" }
+mod-publish-plugin = { id = "me.modmuss50.mod-publish-plugin", version.ref = "mod-publish-plugin" }
+central-portal-publishing = { id = "dev.lukebemish.central-portal-publishing", version.ref = "central-portal-publishing" }

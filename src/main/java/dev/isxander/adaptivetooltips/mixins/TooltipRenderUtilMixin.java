@@ -14,9 +14,19 @@ import org.spongepowered.asm.mixin.injection.At;
 public class TooltipRenderUtilMixin {
     @WrapOperation(
             method = "extractTooltipBackground",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V")
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIII)V"
+            )
     )
-    private static void changeBackgroundColor(GuiGraphicsExtractor instance, RenderPipeline renderPipeline, Identifier id, int i, int j, int k, int l, Operation<Void> original) {
-        instance.blitSprite(renderPipeline, id, i, j, k, l, AdaptiveTooltipConfig.HANDLER.instance().tooltipTransparency);
+    private static void changeBackgroundColor(
+            GuiGraphicsExtractor instance,
+            RenderPipeline renderPipeline,
+            Identifier location,
+            int x, int y,
+            int width, int height,
+            Operation<Void> original
+    ) {
+        instance.blitSprite(renderPipeline, location, x, y, width, height, AdaptiveTooltipConfig.HANDLER.instance().tooltipTransparency);
     }
 }
