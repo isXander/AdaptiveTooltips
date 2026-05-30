@@ -1,0 +1,83 @@
+name: Build & Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build with gradle
+
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: temurin
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          path: build/libs/*
+
+  client_game_test:
+    runs-on: ubuntu-latest
+
+    # Even though they can be concurrent, don't want tests to fail if the build itself is the problem
+    needs: build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Not strictly necessary, but why not!
+        graphics_backend: [opengl, vulkan]
+
+    steps:
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: temurin
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Install Vulkan drivers
+        run: sudo apt-get install -y mesa-vulkan-drivers
+        if: matrix.graphics_backend == 'vulkan'
+
+      - name: Set up graphics backend
+        run: |
+          curl -L -o tracy-capture https://github.com/modmuss50/tracy-utils/releases/download/0.0.2/linux-x86_64-tracy-capture
+          chmod +x tracy-capture
+          mkdir run && echo "eula=true" >> run/eula.txt
+          echo 'preferredGraphicsBackend:"${{ matrix.graphics_backend }}"' >> run/options.txt
+
+      - name: Run client game test
+        run: ./gradlew runClientGameTest
+        env:
+          ENABLE_TRACY: false
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: Test Screenshots (${{ matrix.graphics_backend }})
+          path: run/secreenshots
+
+      - name: Upload Tracy capture
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: Tracy Profile (${{ matrix.graphics_backend }})
+          path: profile.tracy
