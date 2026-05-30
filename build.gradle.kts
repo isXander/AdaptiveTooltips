@@ -206,3 +206,7 @@ tasks.register("publishAdaptiveTooltips") {
     dependsOn("publishMods")
     dependsOn("publishMavenJavaPublicationToCentralPortalMainRepository")
 }
+
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:none", true)
+}
