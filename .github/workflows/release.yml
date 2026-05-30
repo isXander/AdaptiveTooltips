@@ -21,10 +21,6 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Import GPG key
-        run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-
       - name: Publish mod
         run: ./gradlew publishAdaptiveTooltips
         env:
@@ -34,8 +30,8 @@ jobs:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           SIGN: true
-          ORG_GRADLE_PROJECT_signing.gnupg.executable: gpg
-          ORG_GRADLE_PROJECT_signing.gnupg.keyName: ${{ secrets.GPG_KEY_ID }}
-          ORG_GRADLE_PROJECT_signing.gnupg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
 

@@ -201,7 +201,11 @@ val shouldSign = providers.environmentVariable("SIGN")
 
 signing {
     isRequired = shouldSign.get()
-    useGpgCmd()
+    useInMemoryPgpKeys(
+        providers.environmentVariable("GPG_KEY_ID").orNull,
+        providers.environmentVariable("GPG_PRIVATE_KEY").orNull,
+        providers.environmentVariable("GPG_PASSPHRASE").orNull,
+    )
     sign(publishing.publications["mavenJava"])
 }
 
