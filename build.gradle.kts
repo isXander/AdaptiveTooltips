@@ -44,6 +44,10 @@ dependencies {
     neoforgeImplementation(libs.yacl.neoforge)
 }
 
+runs.register("neoforgeClient") {
+    runType("client")
+}
+
 val minecraftVersionRange = "[26.1,26.2)"
 val supportedMinecraftVersions = manifests.minecraftReleasesMatching(minecraftVersionRange)
 
@@ -79,21 +83,41 @@ manifests {
     }
 }
 
-// TODO: https://github.com/FabricMC/fabric-loom/pull/1568
-//fabricApi {
-//    @Suppress("UnstableApiUsage")
-//    configureTests {
-//        createSourceSet = true
-//        modId = "adaptive-tooltips-test"
-//        enableGameTests = false
-//        enableClientGameTests = true
-//        eula = true
-//    }
-//}
+val clientGameTestManifest = manifests.fabricModJson {
+    modId = "adaptive-tooltips-test"
+    displayName = "Adaptive Tooltips Test"
+    version = "1.0.0"
+    iconPath = "icon.png"
+    environment = CLIENT
+    entrypoint("fabric-client-gametest", "dev.isxander.adaptivetooltips.test.AdaptiveTooltipsTest")
+}
 
-//sourceSets.named("gametest") {
-//
-//}
+// TODO: https://github.com/FabricMC/fabric-loom/pull/1568
+fabricApi {
+    @Suppress("UnstableApiUsage")
+    configureTests {
+        createSourceSet = true
+        modId = clientGameTestManifest.modId
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+manifests.fabricModJson(sourceSets.getByName("gametest")) {
+    from(clientGameTestManifest)
+}
+
+sourceSets.named("gametest") {
+    compileClasspath += sourceSets.fabric.get().output
+    runtimeClasspath += sourceSets.fabric.get().output
+}
+configurations.named("gametestCompileClasspath") {
+    extendsFrom(configurations.named("fabricCompileClasspath"))
+}
+configurations.named("gametestRuntimeClasspath") {
+    extendsFrom(configurations.named("fabricRuntimeClasspath"))
+}
 
 tasks.withType<Jar> {
     from(rootProject.file("LICENSE")) {

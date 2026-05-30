@@ -1,4 +1,4 @@
-package dev.isxander.adaptivetooltips;
+package dev.isxander.adaptivetooltips.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
