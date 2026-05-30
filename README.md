@@ -32,7 +32,7 @@ There are multiple methods of wrapping:
 - `Half Screen Width` - Only allows tooltips to have a width of half of the screen.
 - `Smart` - Wraps lines that are considerably longer than the others, with a hard limit of 3/4 of the screen width.
 
-![Remaining Width Wrapping On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/remaining-width-wrapping.png)
+![Remaining Width Wrapping On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/remaining-width-wrapping.png)
 *screenshot is using `Remaining Width` wrapping method*
 
 ### Prioritize Tooltip Top
@@ -41,7 +41,7 @@ I'm actually surprised even Mojang didn't think of adding this one, by default, 
 your screen limit their bottom to the edge of the screen, not the top. This results in you being able to read
 the (often less important) bottom of the tooltip instead of the top. This fix addresses that.
 
-![Prioritize Tooltip Top On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/prioritize-tooltip-top.png)
+![Prioritize Tooltip Top On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/prioritize-tooltip-top.png)
 
 ### Bedrock Centering
 
@@ -49,7 +49,7 @@ This feature grants parity between Java and Bedrock Edition. By default, Bedrock
 the tooltip if it is too long to fit on either the left or the right, this adds that. For the best 
 experience, it is best to pair this with **Screen Width Text Wrapping**.
 
-![Bedrock Centering On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/bedrock-centering.png)
+![Bedrock Centering On/Off Comparison](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/bedrock-centering.png)
 
 ### Align To Corner
 
@@ -57,7 +57,7 @@ When all else fails, this feature is a good fallback. If after all the above fea
 tooltip on the screen, AdaptiveTooltips just places the tooltip in any of the 4 corners of the window,
 determining that based on the least obstruction of the mouse cursor.
 
-![Align Corner Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/align-corner.png)
+![Align Corner Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/align-corner.png)
 
 ### Tooltip Scrolling
 
@@ -67,7 +67,7 @@ vertically *and* horizontally with smooth animations and fine-tuning from the sc
 sensitivity of the scrolling. AdaptiveTooltips is also smart and knows the difference between two different
 tooltips and discards scrolling data when necessary.
 
-![Tooltip Scrolling Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/scrolling.gif)
+![Tooltip Scrolling Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/scrolling.webp)
 
 ### Transparency Modification
 
@@ -75,14 +75,14 @@ You may be bothered that tooltips may obstruct the view of the next few items in
 fix aims to mitigate that by allowing you to adjust the transparency of the tooltip, allowing you to
 decide what's best for in terms of visibility and transparency.
 
-![Transparency Modification Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/transparency-modification.png)
+![Transparency Modification Example](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/transparency-modification.png)
 
 ### YACL-style GUI Tooltips
 
 Capture the style of [YetAnotherConfigLib](https://curseforge.com/minecraft/mc-mods/yacl)'s tooltip positioning
 by placing tooltips above or below a hovered button.
 
-![YACL-style GUI Tooltips](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/1.19.3/screenshots/yacl-style.png)
+![YACL-style GUI Tooltips](https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/screenshots/yacl-style.png)
 
 ## License
 
