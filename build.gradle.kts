@@ -135,8 +135,10 @@ publishMods {
     version = project.version.toString()
     modLoaders.addAll("fabric", "neoforge")
     type = STABLE
+
+    val projectVersion = project.version.toString()
     changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
-        .map { it.replace("{version}", project.version.toString()) }
+        .map { it.replace("{version}", projectVersion) }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
@@ -153,6 +155,8 @@ publishMods {
         projectId = providers.gradleProperty("curseforge.id")
         minecraftVersions.addAll(supportedMinecraftVersions)
         announcementTitle = "Download from Curseforge"
+        client = true
+        javaVersions.add(JavaVersion.VERSION_25)
 
         requires("fabric-api", "yacl")
         optional("modmenu")
