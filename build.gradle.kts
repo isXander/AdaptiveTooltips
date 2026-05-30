@@ -160,6 +160,7 @@ publishMods {
     curseforge {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = providers.gradleProperty("curseforge.id")
+        projectSlug = providers.gradleProperty("curseforge.slug")
         minecraftVersions.addAll(supportedMinecraftVersions)
         announcementTitle = "Download from Curseforge"
         client = true
