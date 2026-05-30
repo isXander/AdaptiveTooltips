@@ -20,6 +20,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Check with Gradle
+        run: ./gradlew check
+
       - name: Build with Gradle
         run: ./gradlew build
 

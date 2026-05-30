@@ -12,6 +12,8 @@ plugins {
     alias(libs.plugins.mod.publish.plugin)
     alias(libs.plugins.central.portal.publishing)
     signing
+
+    alias(libs.plugins.spotless)
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
@@ -220,6 +222,9 @@ tasks.register("publishAdaptiveTooltips") {
     dependsOn("publishMavenJavaPublicationToCentralPortalMainRepository")
 }
 
-tasks.withType<Javadoc>().configureEach {
-    (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:none", true)
+spotless {
+    java {
+        target("src/**/*.java")
+        licenseHeaderFile(rootProject.layout.projectDirectory.file("HEADER"))
+    }
 }
