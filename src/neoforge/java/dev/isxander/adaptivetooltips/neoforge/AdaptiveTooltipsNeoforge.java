@@ -15,7 +15,7 @@ public class AdaptiveTooltipsNeoforge {
 
         ModLoadingContext.get().registerExtensionPoint(
                 IConfigScreenFactory.class,
-                () -> (_, parent) -> AdaptiveTooltipConfig.HANDLER.generateGui().generateScreen(parent)
+                () -> (_, parent) -> AdaptiveTooltipConfig.createGui().generateScreen(parent)
         );
 
         AdaptiveTooltips.onInitializeClient();

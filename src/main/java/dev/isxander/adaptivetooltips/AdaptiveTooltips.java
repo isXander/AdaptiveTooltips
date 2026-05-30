@@ -1,12 +1,14 @@
 package dev.isxander.adaptivetooltips;
 
 import dev.isxander.adaptivetooltips.config.AdaptiveTooltipConfig;
-import dev.isxander.adaptivetooltips.config.gui.KeyCode;
-import dev.isxander.yacl3.config.v2.api.autogen.OptionFactory;
+import net.minecraft.resources.Identifier;
 
 public class AdaptiveTooltips {
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath("adaptive_tooltips", path);
+    }
+
     public static void onInitializeClient() {
         AdaptiveTooltipConfig.HANDLER.load();
-        OptionFactory.register(KeyCode.class, new KeyCode.KeyCodeImpl());
     }
 }
