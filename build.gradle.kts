@@ -209,7 +209,6 @@ val shouldSign = providers.environmentVariable("SIGN")
 signing {
     isRequired = shouldSign.get()
     useInMemoryPgpKeys(
-        providers.environmentVariable("GPG_KEY_ID").orNull,
         providers.environmentVariable("GPG_PRIVATE_KEY").orNull,
         providers.environmentVariable("GPG_PASSPHRASE").orNull,
     )
