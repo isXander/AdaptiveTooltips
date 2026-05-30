@@ -120,10 +120,14 @@ configurations.named("gametestRuntimeClasspath") {
     extendsFrom(configurations.named("fabricRuntimeClasspath"))
 }
 
-tasks.withType<Jar> {
+tasks.withType<Jar>().configureEach {
     from(rootProject.file("LICENSE")) {
         into("META-INF")
     }
+}
+
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:none", true)
 }
 
 publishMods {
@@ -131,12 +135,13 @@ publishMods {
     additionalFiles.from(tasks.fabricJar.flatMap { it.archiveFile })
     additionalFiles.from(tasks.neoforgeJar.flatMap { it.archiveFile })
 
-    displayName = providers.gradleProperty("mod.name")
+    val projectVersion = project.version.toString()
+
+    displayName = providers.gradleProperty("mod.name").map { "$it $projectVersion" }
     version = project.version.toString()
     modLoaders.addAll("fabric", "neoforge")
     type = STABLE
 
-    val projectVersion = project.version.toString()
     changelog = providers.fileContents(rootProject.layout.projectDirectory.file("CHANGELOG.md")).asText
         .map { it.replace("{version}", projectVersion) }
 
