@@ -55,7 +55,7 @@ manifests {
         description = providers.gradleProperty("mod.description")
         authors.add("isXander")
         iconPath = "icon.png"
-        licenses.add("LGPL-3.0-or-later")
+        licenses.add("MPL-2.0")
         issueTrackerUrl = providers.gradleProperty("mod.issuesUrl")
         sourcesUrl = providers.gradleProperty("mod.sourcesUrl")
         homepage = sourcesUrl

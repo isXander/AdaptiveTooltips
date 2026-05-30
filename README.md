@@ -86,4 +86,4 @@ by placing tooltips above or below a hovered button.
 
 ## License
 
-This mod is under the [GNU Lesser General Public License, v3.0](/LICENSE).
+This mod is under the [Mozilla Public License 2.0](/LICENSE).
