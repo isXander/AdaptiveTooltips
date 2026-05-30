@@ -11,6 +11,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.mod.publish.plugin)
     alias(libs.plugins.central.portal.publishing)
+    signing
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
@@ -188,6 +189,16 @@ publishing {
         repos.extensions.getByType<dev.lukebemish.centralportalpublishing.CentralPortalRepositoryHandlerExtension>()
             .portalBundle(":", "main")
     }
+}
+
+val shouldSign = providers.environmentVariable("SIGN")
+    .map { it.toBoolean() }
+    .orElse(false)
+
+signing {
+    isRequired = shouldSign.get()
+    useGpgCmd()
+    sign(publishing.publications["mavenJava"])
 }
 
 tasks.register("publishAdaptiveTooltips") {
