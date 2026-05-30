@@ -173,7 +173,7 @@ publishMods {
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK_URL")
         dryRunWebhookUrl = providers.environmentVariable("DISCORD_WEBHOOK_URL_DRY_RUN")
-        username = displayName
+        username = providers.gradleProperty("mod.name")
         avatarUrl = "https://raw.githubusercontent.com/isXander/AdaptiveTooltips/main/src/main/resources/icon.png"
         content = changelog.zip(providers.gradleProperty("discord.ping")) { c, p -> "$c\n\n$p" }
     }
