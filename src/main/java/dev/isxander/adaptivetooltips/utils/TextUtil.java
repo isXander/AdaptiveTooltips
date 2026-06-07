@@ -19,8 +19,9 @@ public class TextUtil {
         MutableComponent text = Component.empty();
 
         StringBuilder builder = new StringBuilder();
-        final Style[] prevStyle = {Style.EMPTY};
-        charSequence.accept((idx, style, codePoint) -> {
+        Style[] prevStyle = {Style.EMPTY};
+
+        charSequence.accept((_, style, codePoint) -> {
             if (!style.equals(prevStyle[0])) {
                 if (!builder.isEmpty()) {
                     text.append(Component.literal(builder.toString()).setStyle(prevStyle[0]));
@@ -32,6 +33,7 @@ public class TextUtil {
 
             return true;
         });
+
         if (!builder.isEmpty()) {
             text.append(Component.literal(builder.toString()).setStyle(prevStyle[0]));
         }
