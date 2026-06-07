@@ -3,6 +3,9 @@ on: [workflow_dispatch]
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
   release:
@@ -20,6 +23,15 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Build mod
+        run: ./gradlew build
+
+      - uses: actions/attest@v4
+        with:
+          subject-path: build/libs/*.jar
 
       - name: Publish mod
         run: ./gradlew publishAdaptiveTooltips

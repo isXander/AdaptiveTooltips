@@ -2,6 +2,11 @@ name: Build & Test
 
 on: [push, pull_request]
 
+permissions:
+  id-token: write
+  attestations: write
+  artifact-metadata: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,12 +24,18 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Check with Gradle
         run: ./gradlew check
 
       - name: Build with Gradle
         run: ./gradlew build
+
+      - uses: actions/attest@v4
+        with:
+          subject-path: build/libs/*.jar
 
       - uses: actions/upload-artifact@v7
         with:
@@ -54,6 +65,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Install Vulkan drivers
         run: sudo apt-get install -y mesa-vulkan-drivers
