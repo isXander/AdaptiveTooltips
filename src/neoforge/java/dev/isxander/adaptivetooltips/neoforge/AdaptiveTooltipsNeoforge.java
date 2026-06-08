@@ -19,14 +19,14 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = "adaptive_tooltips", dist = Dist.CLIENT)
 public class AdaptiveTooltipsNeoforge {
-    public AdaptiveTooltipsNeoforge() {
-        AdaptiveTooltipsPlatform.ImplHolder.IMPL = new AdaptiveTooltipsPlatformNeoforge();
+	public AdaptiveTooltipsNeoforge() {
+		AdaptiveTooltipsPlatform.ImplHolder.IMPL = new AdaptiveTooltipsPlatformNeoforge();
 
-        ModLoadingContext.get().registerExtensionPoint(
-                IConfigScreenFactory.class,
-                () -> (_, parent) -> AdaptiveTooltipConfig.createGui().generateScreen(parent)
-        );
+		ModLoadingContext.get().registerExtensionPoint(
+				IConfigScreenFactory.class,
+				() -> (_, parent) -> AdaptiveTooltipConfig.createGui().generateScreen(parent)
+		);
 
-        AdaptiveTooltips.onInitializeClient();
-    }
+		AdaptiveTooltips.onInitializeClient();
+	}
 }

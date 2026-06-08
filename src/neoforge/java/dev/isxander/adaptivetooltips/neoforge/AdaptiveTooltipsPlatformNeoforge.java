@@ -15,8 +15,8 @@ import net.neoforged.fml.loading.FMLPaths;
 import java.nio.file.Path;
 
 public class AdaptiveTooltipsPlatformNeoforge implements AdaptiveTooltipsPlatform {
-    @Override
-    public Path getConfigDir() {
-        return FMLPaths.CONFIGDIR.get();
-    }
+	@Override
+	public Path getConfigDir() {
+		return FMLPaths.CONFIGDIR.get();
+	}
 }

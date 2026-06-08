@@ -24,21 +24,21 @@ import java.util.List;
 
 @Mixin(Tooltip.class)
 public class TooltipMixin {
-    @WrapOperation(
-            method = "splitTooltip",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;"
-            )
-    )
-    private static List<FormattedCharSequence> preventWrapping(
-            Font instance,
-            FormattedText input,
-            int maxWidth,
-            Operation<List<FormattedCharSequence>> operation
-    ) {
-        if (AdaptiveTooltipConfig.HANDLER.instance().overwriteVanillaWrapping)
-            return List.of(Language.getInstance().getVisualOrder(input));
-        return operation.call(instance, input, maxWidth);
-    }
+	@WrapOperation(
+			method = "splitTooltip",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;"
+			)
+	)
+	private static List<FormattedCharSequence> preventWrapping(
+			Font instance,
+			FormattedText input,
+			int maxWidth,
+			Operation<List<FormattedCharSequence>> operation
+	) {
+		if (AdaptiveTooltipConfig.HANDLER.instance().overwriteVanillaWrapping)
+			return List.of(Language.getInstance().getVisualOrder(input));
+		return operation.call(instance, input, maxWidth);
+	}
 }

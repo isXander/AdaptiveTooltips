@@ -231,5 +231,6 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
         formatAnnotations()
+		leadingSpacesToTabs(4)
     }
 }

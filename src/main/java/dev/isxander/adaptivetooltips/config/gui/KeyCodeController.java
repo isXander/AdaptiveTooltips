@@ -24,74 +24,74 @@ import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
 
 public class KeyCodeController implements Controller<Integer> {
-    public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYSYM.getOrCreate(code).getDisplayName();
+	public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYSYM.getOrCreate(code).getDisplayName();
 
-    private final Option<Integer> option;
-    private final ValueFormatter<Integer> valueFormatter;
+	private final Option<Integer> option;
+	private final ValueFormatter<Integer> valueFormatter;
 
-    public KeyCodeController(Option<Integer> option) {
-        this(option, DEFAULT_FORMATTER);
-    }
+	public KeyCodeController(Option<Integer> option) {
+		this(option, DEFAULT_FORMATTER);
+	}
 
-    public KeyCodeController(Option<Integer> option, ValueFormatter<Integer> valueFormatter) {
-        this.option = option;
-        this.valueFormatter = valueFormatter;
-    }
+	public KeyCodeController(Option<Integer> option, ValueFormatter<Integer> valueFormatter) {
+		this.option = option;
+		this.valueFormatter = valueFormatter;
+	}
 
-    @Override
-    public Option<Integer> option() {
-        return option;
-    }
+	@Override
+	public Option<Integer> option() {
+		return option;
+	}
 
-    @Override
-    public Component formatValue() {
-        return valueFormatter.format(option().pendingValue());
-    }
+	@Override
+	public Component formatValue() {
+		return valueFormatter.format(option().pendingValue());
+	}
 
-    @Override
-    public AbstractWidget provideWidget(YACLScreen yaclScreen, Dimension<Integer> dimension) {
-        return new KeyCodeControllerElement(this, yaclScreen, dimension);
-    }
+	@Override
+	public AbstractWidget provideWidget(YACLScreen yaclScreen, Dimension<Integer> dimension) {
+		return new KeyCodeControllerElement(this, yaclScreen, dimension);
+	}
 
-    public static class KeyCodeControllerElement extends ControllerWidget<KeyCodeController> {
-        private boolean awaitingKeyPress = false;
+	public static class KeyCodeControllerElement extends ControllerWidget<KeyCodeController> {
+		private boolean awaitingKeyPress = false;
 
-        private KeyCodeControllerElement(KeyCodeController control, YACLScreen screen, Dimension<Integer> dim) {
-            super(control, screen, dim);
-        }
+		private KeyCodeControllerElement(KeyCodeController control, YACLScreen screen, Dimension<Integer> dim) {
+			super(control, screen, dim);
+		}
 
-        @Override
-        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-            if (!isMouseOver(event.x(), event.y()) || !isAvailable()) {
-                return false;
-            }
+		@Override
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			if (!isMouseOver(event.x(), event.y()) || !isAvailable()) {
+				return false;
+			}
 
-            awaitingKeyPress = !awaitingKeyPress;
-            return true;
-        }
+			awaitingKeyPress = !awaitingKeyPress;
+			return true;
+		}
 
-        @Override
-        protected Component getValueText() {
-            if (awaitingKeyPress)
-                return Component.translatable("adaptivetooltips.gui.awaiting_key").withStyle(ChatFormatting.ITALIC);
+		@Override
+		protected Component getValueText() {
+			if (awaitingKeyPress)
+				return Component.translatable("adaptivetooltips.gui.awaiting_key").withStyle(ChatFormatting.ITALIC);
 
-            return super.getValueText();
-        }
+			return super.getValueText();
+		}
 
-        @Override
-        protected int getHoveredControlWidth() {
-            return getUnhoveredControlWidth();
-        }
+		@Override
+		protected int getHoveredControlWidth() {
+			return getUnhoveredControlWidth();
+		}
 
-        @Override
-        public boolean keyPressed(@NonNull KeyEvent event) {
-            if (awaitingKeyPress) {
-                control.option().requestSet(event.key());
-                awaitingKeyPress = false;
-                return true;
-            }
+		@Override
+		public boolean keyPressed(@NonNull KeyEvent event) {
+			if (awaitingKeyPress) {
+				control.option().requestSet(event.key());
+				awaitingKeyPress = false;
+				return true;
+			}
 
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 }

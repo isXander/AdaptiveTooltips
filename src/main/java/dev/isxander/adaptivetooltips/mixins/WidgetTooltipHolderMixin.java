@@ -22,13 +22,13 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(WidgetTooltipHolder.class)
 public class WidgetTooltipHolderMixin {
-    @ModifyReturnValue(method = "createTooltipPositioner", at = @At("RETURN"))
-    private ClientTooltipPositioner changePositioner(
-            ClientTooltipPositioner tooltipPositioner,
-            @Local(argsOnly = true, name = "screenRectangle") ScreenRectangle screenRectangle
-    ) {
-        return AdaptiveTooltipConfig.HANDLER.instance().useYACLTooltipPositioner
-                ? new YACLTooltipPositioner(screenRectangle)
-                : tooltipPositioner;
-    }
+	@ModifyReturnValue(method = "createTooltipPositioner", at = @At("RETURN"))
+	private ClientTooltipPositioner changePositioner(
+			ClientTooltipPositioner tooltipPositioner,
+			@Local(argsOnly = true, name = "screenRectangle") ScreenRectangle screenRectangle
+	) {
+		return AdaptiveTooltipConfig.HANDLER.instance().useYACLTooltipPositioner
+				? new YACLTooltipPositioner(screenRectangle)
+				: tooltipPositioner;
+	}
 }

@@ -14,10 +14,10 @@ import dev.isxander.adaptivetooltips.platform.AdaptiveTooltipsPlatform;
 import net.fabricmc.api.ClientModInitializer;
 
 public class AdaptiveTooltipsFabric implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        AdaptiveTooltipsPlatform.ImplHolder.IMPL = new AdaptiveTooltipsPlatformFabric();
+	@Override
+	public void onInitializeClient() {
+		AdaptiveTooltipsPlatform.ImplHolder.IMPL = new AdaptiveTooltipsPlatformFabric();
 
-        AdaptiveTooltips.onInitializeClient();
-    }
+		AdaptiveTooltips.onInitializeClient();
+	}
 }
