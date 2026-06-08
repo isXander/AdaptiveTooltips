@@ -26,6 +26,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-write-only: true
 
       - name: Check with Gradle
         run: ./gradlew check
@@ -67,6 +68,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-write-only: true
 
       - name: Install Vulkan drivers
         run: sudo apt-get install -y mesa-vulkan-drivers
