@@ -19,7 +19,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft.get()
 
 group = "dev.isxander"
-version = "1.4.0+$minecraftVersion"
+version = "1.4.1+$minecraftVersion"
 
 java {
     toolchain {

@@ -2,5 +2,4 @@
 
 ## Changes
 
-- Update to 26.1.2
-- Support NeoForge
+- Update to 26.2
