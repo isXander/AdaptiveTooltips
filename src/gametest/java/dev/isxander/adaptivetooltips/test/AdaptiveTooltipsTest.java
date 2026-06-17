@@ -40,7 +40,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
 			context.waitTick();
 
 			IntIntPair pos = context.computeOnClient(minecraft -> {
-				AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) minecraft.screen;
+				AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) minecraft.gui.screen();
 				if (screen == null) {
 					throw new IllegalStateException("Screen is null");
 				}

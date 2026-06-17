@@ -51,7 +51,7 @@ runs.register("neoforgeClient") {
     runType("client")
 }
 
-val minecraftVersionRange = "[26.1,26.2)"
+val minecraftVersionRange = "[26.2,26.3)"
 val supportedMinecraftVersions = manifests.minecraftReleasesMatching(minecraftVersionRange)
 
 manifests {
