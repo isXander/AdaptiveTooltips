@@ -77,10 +77,9 @@ jobs:
           curl -L -o tracy-capture https://github.com/modmuss50/tracy-utils/releases/download/0.0.2/linux-x86_64-tracy-capture
           chmod +x tracy-capture
           mkdir run && echo "eula=true" >> run/eula.txt
-          echo 'preferredGraphicsBackend:"${{ matrix.graphics_backend }}"' >> run/options.txt
 
       - name: Run client game test
-        run: ./gradlew runClientGameTest
+        run: ./gradlew runClientGameTest --args="--graphicsBackend ${{ matrix.graphics_backend }}"
         env:
           ENABLE_TRACY: false
 
