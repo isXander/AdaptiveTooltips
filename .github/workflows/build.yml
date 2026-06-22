@@ -69,7 +69,7 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Install Vulkan drivers
-        run: \
+        run: |
           sudo apt-get update
           sudo apt-get install -y mesa-vulkan-drivers
         if: matrix.graphics_backend == 'vulkan'
