@@ -89,7 +89,7 @@ jobs:
         if: always()
         with:
           name: Test Screenshots (${{ matrix.graphics_backend }})
-          path: run/secreenshots
+          path: build/run/clientGameTest/secreenshots
 
       - name: Upload Tracy capture
         uses: actions/upload-artifact@v7
