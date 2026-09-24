@@ -71,8 +71,7 @@ jobs:
       - name: Install Vulkan drivers
         run: |
           sudo apt-get update
-          sudo apt-get install -y mesa-vulkan-drivers
-        if: matrix.graphics_backend == 'vulkan'
+          sudo apt-get install -y mesa-vulkan-drivers xvfb libopenal1
 
       - name: Set up graphics backend
         run: |
