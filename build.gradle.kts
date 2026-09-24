@@ -10,8 +10,6 @@ plugins {
 
     `maven-publish`
     alias(libs.plugins.mod.publish.plugin)
-    alias(libs.plugins.central.portal.publishing)
-    signing
 
     alias(libs.plugins.spotless)
 }
@@ -180,13 +178,6 @@ publishMods {
     }
 }
 
-centralPortalPublishing.bundle("main") {
-    username = providers.environmentVariable("MAVEN_CENTRAL_USERNAME")
-    password = providers.environmentVariable("MAVEN_CENTRAL_PASSWORD")
-
-    publishingType = "AUTOMATIC"
-}
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
@@ -196,31 +187,18 @@ publishing {
         }
     }
 
-    repositories {
-        // Darn you, Kotlin!
-        val repos = this as ExtensionAware
-        repos.extensions.getByType<dev.lukebemish.centralportalpublishing.CentralPortalRepositoryHandlerExtension>()
-            .portalBundle(":", "main")
-    }
-}
-
-val shouldSign = providers.environmentVariable("SIGN")
-    .map { it.toBoolean() }
-    .orElse(false)
-
-signing {
-    isRequired = shouldSign.get()
-    useInMemoryPgpKeys(
-        providers.environmentVariable("GPG_PRIVATE_KEY").orNull,
-        providers.environmentVariable("GPG_PASSPHRASE").orNull,
-    )
-    sign(publishing.publications["mavenJava"])
+	repositories {
+		maven("https://maven.isxander.dev/releases") {
+			name = "XanderMaven"
+			credentials(PasswordCredentials::class)
+		}
+	}
 }
 
 tasks.register("publishAdaptiveTooltips") {
     group = "publishing"
     dependsOn("publishMods")
-    dependsOn("publishMavenJavaPublicationToCentralPortalMainRepository")
+    dependsOn("publishMavenJavaPublicationToXanderMavenRepository")
 }
 
 spotless {
