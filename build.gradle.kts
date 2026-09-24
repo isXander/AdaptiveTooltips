@@ -41,7 +41,8 @@ dependencies {
 
     fabricApi(libs.fabric.api)
     fabricApi(libs.yacl.fabric)
-    fabricImplementation(libs.mod.menu)
+    fabricCompileOnly(libs.mod.menu)
+	fabricLocalRuntime(libs.mod.menu)
 
     neoforgeImplementation(libs.neoforge)
     neoforgeImplementation(libs.yacl.neoforge)
