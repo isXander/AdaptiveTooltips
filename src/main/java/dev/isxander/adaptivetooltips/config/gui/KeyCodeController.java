@@ -24,7 +24,7 @@ import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
 
 public class KeyCodeController implements Controller<Integer> {
-	public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYSYM.getOrCreate(code).getDisplayName();
+	public static final ValueFormatter<Integer> DEFAULT_FORMATTER = code -> InputConstants.Type.KEYBOARD.getOrCreate(code).getDisplayName();
 
 	private final Option<Integer> option;
 	private final ValueFormatter<Integer> valueFormatter;

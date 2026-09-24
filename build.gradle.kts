@@ -19,7 +19,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft.get()
 
 group = "dev.isxander"
-version = "1.4.1+$minecraftVersion"
+version = "1.4.2+$minecraftVersion"
 
 java {
     toolchain {
@@ -51,7 +51,7 @@ runs.register("neoforgeClient") {
     runType("client")
 }
 
-val minecraftVersionRange = "[26.2,26.3)"
+val minecraftVersionRange = "[26.3,26.4)"
 val supportedMinecraftVersions = manifests.minecraftReleasesMatching(minecraftVersionRange)
 
 manifests {
@@ -68,7 +68,7 @@ manifests {
         homepage = sourcesUrl
         mixin("adaptive-tooltips.mixins.json")
         dependency("minecraft", REQUIRED, minecraftVersionRange)
-        dependency("yet_another_config_lib_v3", REQUIRED, "[3.6.3,4)")
+        dependency("yet_another_config_lib_v3", REQUIRED, "[3.6.7,4)")
     }
 
     fabricModJson(sourceSets.fabric.get()) {

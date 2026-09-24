@@ -41,8 +41,8 @@ public class MouseMixin {
 			long handle,
 			double xoffset, double yoffset
 	) {
-		if (InputConstants.isKeyDown(minecraft.getWindow(), AdaptiveTooltipConfig.HANDLER.instance().scrollKeyCode)) {
-			if (InputConstants.isKeyDown(minecraft.getWindow(), AdaptiveTooltipConfig.HANDLER.instance().horizontalScrollKeyCode)) {
+		if (InputConstants.isKeyDown(AdaptiveTooltipConfig.HANDLER.instance().scrollKeyCode)) {
+			if (InputConstants.isKeyDown(AdaptiveTooltipConfig.HANDLER.instance().horizontalScrollKeyCode)) {
 				ScrollTracker.addHorizontalScroll((int) Math.signum(yoffset));
 			} else {
 				ScrollTracker.addVerticalScroll((int) Math.signum(yoffset));

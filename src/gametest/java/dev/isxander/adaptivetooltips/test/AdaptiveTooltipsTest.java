@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -33,7 +34,7 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
+			singleplayer.getConnection().waitForChunksRender();
 
 			context.getInput().pressKey(options -> options.keyInventory);
 			context.waitForScreen(InventoryScreen.class);
@@ -169,7 +170,8 @@ public class AdaptiveTooltipsTest implements FabricClientGameTest {
 		for (T value : values) {
 			config.accept(AdaptiveTooltipConfig.HANDLER.instance(), value);
 			context.waitTick();
-			context.assertScreenshotEquals(name + '_' + value.toString().toLowerCase());
+			context.assertScreenshotContains(TestScreenshotComparisonOptions.of(name + '_' + value.toString().toLowerCase())
+				.save());
 		}
 
 		config.accept(AdaptiveTooltipConfig.HANDLER.instance(), values[0]);
