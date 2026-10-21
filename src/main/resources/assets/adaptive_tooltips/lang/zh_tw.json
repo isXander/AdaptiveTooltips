@@ -1,3 +1,6 @@
 {
-  "adaptivetooltips.wrap_text_behaviour.off": "關閉"
+  "adaptivetooltips.wrap_text_behaviour.off": "關閉",
+  "adaptivetooltips.wrap_text_behaviour.smart": "智慧",
+  "adaptivetooltips.format.pixels": "%s 像素",
+  "adaptivetooltips.format.vanilla": "原版"
 }
